@@ -1,17 +1,5 @@
 <a href="https://hapi.dev"><img src="https://raw.githubusercontent.com/hapijs/assets/master/images/family.png" width="180px" align="right" /></a>
 
-# @hapi/joi
+# @hapi/validate
 
-#### The most powerful schema description language and data validator for JavaScript.
-
-**joi** is part of the **hapi** ecosystem and was designed to work seamlessly with the [hapi web framework](https://hapi.dev) and its other components (but works great on its own or with other frameworks). If you are using a different web framework and find this module useful, check out [hapi](https://hapi.dev) – they work even better together.
-
-### Visit the [hapi.dev](https://hapi.dev) Developer Portal for tutorials, documentation, and support
-
-## Useful resources
-
-- [Documentation and API](https://hapi.dev/family/joi/)
-- [Versions status](https://hapi.dev/resources/status/#joi)
-- [Changelog](https://hapi.dev/family/joi/changelog/)
-- [Project policies](https://hapi.dev/policies/)
-- [Free and commercial support options](https://hapi.dev/support/)
+A fork of the [**joi**](https://github.com/sideway/joi) validation library for internal hapi core needs only. This fork is maintained to keep the hapi framework 100% free of external dependencies. It is not meant to be used outside of hapi core modules. Please use the official [**joi**](https://github.com/sideway/joi) library.
