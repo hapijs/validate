@@ -496,9 +496,7 @@ describe('object', () => {
                 type: 'object.with',
                 context: {
                     main: 'first',
-                    mainWithLabel: 'first',
                     peer: 'second',
-                    peerWithLabel: 'second',
                     label: 'value',
                     value: { first: 'value' }
                 }
@@ -523,7 +521,7 @@ describe('object', () => {
 
         Helper.validate(schema, { context: { x: 'baz' } }, [
             [{ foo: 'bar' }, false, {
-                message: '"foo" must be [ref:global:x]',
+                message: '"foo" must be one of [ref:global:x]',
                 path: ['foo'],
                 type: 'any.only',
                 context: { value: 'bar', valids: [ref], label: 'foo', key: 'foo' }
@@ -532,7 +530,7 @@ describe('object', () => {
 
         Helper.validate(schema, { context: { x: ['baz', 'qux'] } }, [
             [{ foo: 'bar' }, false, {
-                message: '"foo" must be [ref:global:x]',
+                message: '"foo" must be one of [ref:global:x]',
                 path: ['foo'],
                 type: 'any.only',
                 context: { value: 'bar', valids: [ref], label: 'foo', key: 'foo' }
@@ -541,7 +539,7 @@ describe('object', () => {
 
         Helper.validate(schema, [
             [{ foo: 'bar' }, false, {
-                message: '"foo" must be [ref:global:x]',
+                message: '"foo" must be one of [ref:global:x]',
                 path: ['foo'],
                 type: 'any.only',
                 context: { value: 'bar', valids: [ref], label: 'foo', key: 'foo' }
@@ -625,9 +623,7 @@ describe('object', () => {
                     type: 'object.with',
                     context: {
                         main: 'a',
-                        mainWithLabel: 'a',
                         peer: 'b',
-                        peerWithLabel: 'b',
                         label: 'value',
                         value: input
                     }
@@ -642,32 +638,6 @@ describe('object', () => {
         const schema = Joi.object({ a: 1 }).with('a', 'b');
 
         Helper.validate(schema, [[input, false, '"unknown" is not allowed']]);
-    });
-
-    it('applies labels with nested objects', () => {
-
-        const schema = Joi.object({
-            a: Joi.number().label('first'),
-            b: Joi.object({
-                c: Joi.string().label('second'),
-                d: Joi.number()
-            })
-        })
-            .with('a', ['b.c']);
-
-        Helper.validate(schema, [[{ a: 1, b: { d: 2 } }, false, {
-            message: '"first" missing required peer "b.second"',
-            path: [],
-            type: 'object.with',
-            context: {
-                main: 'a',
-                mainWithLabel: 'first',
-                peer: 'b.c',
-                peerWithLabel: 'b.second',
-                label: 'value',
-                value: { a: 1, b: { d: 2 } }
-            }
-        }]]);
     });
 
     it('errors on unknown key', () => {
@@ -702,9 +672,7 @@ describe('object', () => {
                 type: 'object.and',
                 context: {
                     present: ['txt'],
-                    presentWithLabels: ['txt'],
                     missing: ['upc', 'code'],
-                    missingWithLabels: ['upc', 'code'],
                     label: 'value',
                     value: { txt: 'x' }
                 }
@@ -718,9 +686,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['upc'],
-                        presentWithLabels: ['upc'],
                         missing: ['txt', 'code'],
-                        missingWithLabels: ['txt', 'code'],
                         label: 'value',
                         value: { upc: null }
                     }
@@ -731,9 +697,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['upc'],
-                        presentWithLabels: ['upc'],
                         missing: ['txt', 'code'],
-                        missingWithLabels: ['txt', 'code'],
                         label: 'value',
                         value: { upc: 'test' }
                     }
@@ -750,9 +714,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['txt'],
-                        presentWithLabels: ['txt'],
                         missing: ['upc', 'code'],
-                        missingWithLabels: ['upc', 'code'],
                         label: 'value',
                         value: { txt: 'test' }
                     }
@@ -769,9 +731,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['code'],
-                        presentWithLabels: ['code'],
                         missing: ['txt', 'upc'],
-                        missingWithLabels: ['txt', 'upc'],
                         label: 'value',
                         value: { code: 123 }
                     }
@@ -782,9 +742,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['txt', 'upc'],
-                        presentWithLabels: ['txt', 'upc'],
                         missing: ['code'],
-                        missingWithLabels: ['code'],
                         label: 'value',
                         value: { txt: 'test', upc: null }
                     }
@@ -795,9 +753,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['txt', 'upc'],
-                        presentWithLabels: ['txt', 'upc'],
                         missing: ['code'],
-                        missingWithLabels: ['code'],
                         label: 'value',
                         value: { txt: 'test', upc: '' }
                     }
@@ -820,9 +776,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['upc'],
-                        presentWithLabels: ['upc'],
                         missing: ['txt', 'code'],
-                        missingWithLabels: ['txt', 'code'],
                         label: 'value',
                         value: { txt: undefined, upc: 'test' }
                     }
@@ -833,9 +787,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['txt'],
-                        presentWithLabels: ['txt'],
                         missing: ['upc', 'code'],
-                        missingWithLabels: ['upc', 'code'],
                         label: 'value',
                         value: { txt: 'test', upc: undefined }
                     }
@@ -846,9 +798,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['txt', 'upc'],
-                        presentWithLabels: ['txt', 'upc'],
                         missing: ['code'],
-                        missingWithLabels: ['code'],
                         label: 'value',
                         value: { txt: 'test', upc: '' }
                     }
@@ -859,9 +809,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['txt', 'upc'],
-                        presentWithLabels: ['txt', 'upc'],
                         missing: ['code'],
-                        missingWithLabels: ['code'],
                         label: 'value',
                         value: { txt: 'test', upc: null }
                     }
@@ -896,9 +844,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['txt', 'upc'],
-                        presentWithLabels: ['txt', 'upc'],
                         missing: ['code'],
-                        missingWithLabels: ['code'],
                         label: 'value',
                         value: { txt: 'test', upc: 'test' }
                     }
@@ -906,27 +852,6 @@ describe('object', () => {
                 [{ txt: 'test', upc: 'test', code: 322 }, true],
                 [{ txt: 'test', upc: null, code: 322 }, true]
             ]);
-        });
-
-        it('applies labels', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.string().label('second')
-            }).and('a', 'b');
-            Helper.validate(schema, [[{ a: 1 }, false, {
-                message: '"value" contains [first] without its required peers [second]',
-                path: [],
-                type: 'object.and',
-                context: {
-                    present: ['a'],
-                    presentWithLabels: ['first'],
-                    missing: ['b'],
-                    missingWithLabels: ['second'],
-                    label: 'value',
-                    value: { a: 1 }
-                }
-            }]]);
         });
 
         it('allows nested objects', () => {
@@ -948,9 +873,7 @@ describe('object', () => {
                     type: 'object.and',
                     context: {
                         present: ['a'],
-                        presentWithLabels: ['a'],
                         missing: ['b.c'],
-                        missingWithLabels: ['b.c'],
                         label: 'value',
                         value: sampleObject2
                     }
@@ -971,60 +894,6 @@ describe('object', () => {
                 [{ a: 'test', b: Object.assign(() => { }, { c: 'test2' }) }, true, Helper.skip],
                 [{ a: 'test', b: Object.assign(() => { }, { d: 80 }) }, false, '"value" contains [a] without its required peers [b.c]']
             ]);
-        });
-
-        it('applies labels with nested objects', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.object({
-                    c: Joi.string().label('second'),
-                    d: Joi.number()
-                })
-            })
-                .and('a', 'b.c');
-
-            const error = schema.validate({ a: 1 }).error;
-            expect(error).to.be.an.error('"value" contains [first] without its required peers [b.second]');
-            expect(error.details).to.equal([{
-                message: '"value" contains [first] without its required peers [b.second]',
-                path: [],
-                type: 'object.and',
-                context: {
-                    present: ['a'],
-                    presentWithLabels: ['first'],
-                    missing: ['b.c'],
-                    missingWithLabels: ['b.second'],
-                    label: 'value',
-                    value: { a: 1 }
-                }
-            }]);
-        });
-
-        it('applies labels with invalid nested peers', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.object({
-                    c: Joi.string().label('second'),
-                    d: Joi.number()
-                })
-            })
-                .and('a', 'c.d');
-
-            Helper.validate(schema, [[{ a: 1, b: { d: 1 } }, false, {
-                message: '"value" contains [first] without its required peers [c.d]',
-                path: [],
-                type: 'object.and',
-                context: {
-                    present: ['a'],
-                    presentWithLabels: ['first'],
-                    missing: ['c.d'],
-                    missingWithLabels: ['c.d'],
-                    label: 'value',
-                    value: { a: 1, b: { d: 1 } }
-                }
-            }]]);
         });
     });
 
@@ -1106,7 +975,7 @@ describe('object', () => {
             })
                 .assert(Joi.ref('/d/e', { separator: '/' }), Joi.ref('a.c'), 'equal to a/c');
 
-            Helper.validate(schema, [[{ a: { b: 'x', c: 5 }, d: { e: 6 } }, false, '"value" is invalid because "d/e" failed to equal to a/c']]);
+            Helper.validate(schema, [[{ a: { b: 'x', c: 5 }, d: { e: 6 } }, false, '"value" is invalid because it failed to pass the assertion test']]);
 
             Helper.validate(schema, [
                 [{ a: { b: 'x', c: 5 }, d: { e: 5 } }, true]
@@ -1129,7 +998,7 @@ describe('object', () => {
 
             Helper.validate(schema, [
                 [{ a: { b: 'x', c: 5 }, d: { e: 6 } }, false, {
-                    message: '"value" is invalid because "d.e" failed to equal to a.c',
+                    message: '"value" is invalid because it failed to pass the assertion test',
                     path: [],
                     type: 'object.assert',
                     context: {
@@ -1157,7 +1026,7 @@ describe('object', () => {
             Helper.validate(schema, [
                 [{ a: 5, d: { e: 5 } }, true],
                 [{ a: 6, d: { e: 5 } }, false, {
-                    message: '"value" is invalid because "a" failed to equal to d.e',
+                    message: '"value" is invalid because it failed to pass the assertion test',
                     path: [],
                     type: 'object.assert',
                     context: {
@@ -1201,7 +1070,7 @@ describe('object', () => {
             }).assert(ref, Joi.boolean());
 
             Helper.validate(schema, [[{ d: { e: [] } }, false, {
-                message: '"value" is invalid because "d.e" failed to pass the assertion test',
+                message: '"value" is invalid because it failed to pass the assertion test',
                 path: [],
                 type: 'object.assert',
                 context: {
@@ -1222,36 +1091,6 @@ describe('object', () => {
                 .assert('.b.c', Joi.number());
 
             Helper.validate(schema, [[{ a: { b: 1 }, b: { c: 2 } }, true]]);
-        });
-
-        it('uses templates', () => {
-
-            const subject = Joi.x('{.a || .b || .c}');
-            const schema = Joi.object({
-                a: Joi.boolean(),
-                b: Joi.boolean(),
-                c: Joi.boolean()
-            })
-                .assert(subject, true, 'at least one key must be true');
-
-            Helper.validate(schema, [
-                [undefined, true],
-                [{ a: true, b: true, c: true }, true],
-                [{ a: true, b: false, c: false }, true],
-                [{ a: false, b: true, c: false }, true],
-                [{ a: false, b: false, c: true }, true],
-                [{ a: false, b: false, c: false }, false, {
-                    message: '"value" is invalid because at least one key must be true',
-                    path: [],
-                    type: 'object.assert',
-                    context: {
-                        subject,
-                        message: 'at least one key must be true',
-                        label: 'value',
-                        value: { a: false, b: false, c: false }
-                    }
-                }]
-            ]);
         });
     });
 
@@ -1278,72 +1117,6 @@ describe('object', () => {
         it('does not leak casts to any', () => {
 
             expect(() => Joi.any().cast('map')).to.throw('Type any does not support casting to map');
-        });
-    });
-
-    describe('describe()', () => {
-
-        it('return empty description when no schema defined', () => {
-
-            const schema = Joi.object();
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'object'
-            });
-        });
-
-        it('describes patterns', () => {
-
-            const schema = Joi.object({
-                a: Joi.string()
-            }).pattern(/\w\d/i, Joi.boolean());
-
-            expect(schema.describe()).to.equal({
-                type: 'object',
-                keys: {
-                    a: {
-                        type: 'string'
-                    }
-                },
-                patterns: [
-                    {
-                        regex: '/\\w\\d/i',
-                        rule: {
-                            type: 'boolean'
-                        }
-                    }
-                ]
-            });
-        });
-
-        it('describes patterns with schema', () => {
-
-            const schema = Joi.object({
-                a: Joi.string()
-            }).pattern(Joi.string().uuid({ version: 'uuidv4' }), Joi.boolean());
-
-            expect(schema.describe()).to.equal({
-                type: 'object',
-                keys: {
-                    a: {
-                        type: 'string'
-                    }
-                },
-                patterns: [
-                    {
-                        schema: {
-                            rules: [{
-                                args: { options: { version: 'uuidv4' } },
-                                name: 'guid'
-                            }],
-                            type: 'string'
-                        },
-                        rule: {
-                            type: 'boolean'
-                        }
-                    }
-                ]
-            });
         });
     });
 
@@ -1394,22 +1167,6 @@ describe('object', () => {
         it('throws when constructor is not a function', () => {
 
             expect(() => Joi.object().instance('')).to.throw('constructor must be a function');
-        });
-
-        it('uses the constructor name in the schema description', () => {
-
-            const description = Joi.object().instance(RegExp).describe();
-
-            expect(description.rules[0]).to.equal({ name: 'instance', args: { name: 'RegExp', constructor: RegExp } });
-        });
-
-        it('uses the constructor reference in the schema description', () => {
-
-            const Foo = function Foo() { };
-
-            const description = Joi.object().instance(Foo).describe();
-
-            expect(new Foo()).to.be.an.instanceof(description.rules[0].args.constructor);
         });
     });
 
@@ -1465,7 +1222,7 @@ describe('object', () => {
                 [{ a: 1 }, true, { a: 1 }],
                 [{ a: '1' }, true, { a: 1 }],
                 [{ a: '2' }, false, {
-                    message: '"a" must be [1]',
+                    message: '"a" must be one of [1]',
                     path: ['a'],
                     type: 'any.only',
                     context: { value: 2, valids: [1], label: 'a', key: 'a' }
@@ -1565,8 +1322,8 @@ describe('object', () => {
             Helper.validate(schema, [
                 [{ flag: true }, false, '"type" is required'],
                 [{ flag: true }, false, '"type" is required'],
-                [{ type: 'a', flag: true }, false, '"flag" must be [false]'],
-                [{ type: 'a', set: true, flag: true }, false, '"flag" must be [false]']
+                [{ type: 'a', flag: true }, false, '"flag" must be one of [false]'],
+                [{ type: 'a', set: true, flag: true }, false, '"flag" must be one of [false]']
             ]);
         });
     });
@@ -1623,9 +1380,7 @@ describe('object', () => {
                     type: 'object.nand',
                     context: {
                         main: 'txt',
-                        mainWithLabel: 'txt',
                         peers: ['upc', 'code'],
-                        peersWithLabels: ['upc', 'code'],
                         label: 'value',
                         value: { txt: 'x', upc: 'y', code: 123 }
                     }
@@ -1652,9 +1407,7 @@ describe('object', () => {
                     type: 'object.nand',
                     context: {
                         main: 'txt',
-                        mainWithLabel: 'txt',
                         peers: ['upc', 'code'],
-                        peersWithLabels: ['upc', 'code'],
                         label: 'value',
                         value: { txt: 'test', upc: 'test', code: 322 }
                     }
@@ -1665,37 +1418,12 @@ describe('object', () => {
                     type: 'object.nand',
                     context: {
                         main: 'txt',
-                        mainWithLabel: 'txt',
                         peers: ['upc', 'code'],
-                        peersWithLabels: ['upc', 'code'],
                         label: 'value',
                         value: { txt: 'test', upc: null, code: 322 }
                     }
                 }]
             ]);
-        });
-
-        it('applies labels', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.string().label('second')
-            })
-                .nand('a', 'b');
-
-            Helper.validate(schema, [[{ a: 1, b: 'b' }, false, {
-                message: '"first" must not exist simultaneously with [second]',
-                path: [],
-                type: 'object.nand',
-                context: {
-                    main: 'a',
-                    mainWithLabel: 'first',
-                    peers: ['b'],
-                    peersWithLabels: ['second'],
-                    label: 'value',
-                    value: { a: 1, b: 'b' }
-                }
-            }]]);
         });
 
         it('allows nested objects', () => {
@@ -1715,9 +1443,7 @@ describe('object', () => {
                     type: 'object.nand',
                     context: {
                         main: 'a',
-                        mainWithLabel: 'a',
                         peers: ['b.c'],
-                        peersWithLabels: ['b.c'],
                         label: 'value',
                         value: { a: 'test', b: { c: 'test2' } }
                     }
@@ -1738,34 +1464,6 @@ describe('object', () => {
                 [{ a: 'test', b: Object.assign(() => { }, { d: 80 }) }, true, Helper.skip],
                 [{ a: 'test', b: Object.assign(() => { }, { c: 'test2' }) }, false, '"a" must not exist simultaneously with [b.c]']
             ]);
-        });
-
-        it('applies labels with nested objects', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.object({
-                    c: Joi.string().label('second'),
-                    d: Joi.number()
-                })
-            })
-                .nand('a', 'b.c');
-
-            const error = schema.validate({ a: 1, b: { c: 'c' } }).error;
-            expect(error).to.be.an.error('"first" must not exist simultaneously with [b.second]');
-            expect(error.details).to.equal([{
-                message: '"first" must not exist simultaneously with [b.second]',
-                path: [],
-                type: 'object.nand',
-                context: {
-                    main: 'a',
-                    mainWithLabel: 'first',
-                    peers: ['b.c'],
-                    peersWithLabels: ['b.second'],
-                    label: 'value',
-                    value: { a: 1, b: { c: 'c' } }
-                }
-            }]);
         });
     });
 
@@ -1816,7 +1514,6 @@ describe('object', () => {
                     type: 'object.missing',
                     context: {
                         peers: ['txt', 'upc', 'code'],
-                        peersWithLabels: ['txt', 'upc', 'code'],
                         label: 'value',
                         value: {}
                     }
@@ -1925,29 +1622,9 @@ describe('object', () => {
                 type: 'object.missing',
                 context: {
                     peers: ['x', 'y'],
-                    peersWithLabels: ['x', 'y'],
                     label: 'a.b',
                     key: 'b',
                     value: { c: 1 }
-                }
-            }]]);
-        });
-
-        it('applies labels', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.string().label('second')
-            }).or('a', 'b');
-            Helper.validate(schema, [[{}, false, {
-                message: '"value" must contain at least one of [first, second]',
-                path: [],
-                type: 'object.missing',
-                context: {
-                    peers: ['a', 'b'],
-                    peersWithLabels: ['first', 'second'],
-                    label: 'value',
-                    value: {}
                 }
             }]]);
         });
@@ -1971,7 +1648,6 @@ describe('object', () => {
                     type: 'object.missing',
                     context: {
                         peers: ['a', 'b.c'],
-                        peersWithLabels: ['a', 'b.c'],
                         label: 'value',
                         value: sampleObject2
                     }
@@ -1996,36 +1672,11 @@ describe('object', () => {
                     type: 'object.missing',
                     context: {
                         peers: ['a', 'b.c'],
-                        peersWithLabels: ['a', 'b.c'],
                         label: 'value',
                         value: { d: 90 }
                     }
                 }]
             ]);
-        });
-
-        it('applies labels with nested objects', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.object({
-                    c: Joi.string().label('second'),
-                    d: Joi.number()
-                })
-            })
-                .or('a', 'b.c');
-
-            Helper.validate(schema, [[{}, false, {
-                message: '"value" must contain at least one of [first, b.second]',
-                path: [],
-                type: 'object.missing',
-                context: {
-                    peers: ['a', 'b.c'],
-                    peersWithLabels: ['first', 'b.second'],
-                    label: 'value',
-                    value: {}
-                }
-            }]]);
         });
     });
 
@@ -2065,29 +1716,6 @@ describe('object', () => {
             Helper.validate(schema, [[{}, true]]);
         });
 
-        it('applies labels with too many peers', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.string().label('second')
-            })
-                .oxor('a', 'b');
-
-            Helper.validate(schema, [[{ a: 1, b: 'b' }, false, {
-                message: '"value" contains a conflict between optional exclusive peers [first, second]',
-                path: [],
-                type: 'object.oxor',
-                context: {
-                    peers: ['a', 'b'],
-                    peersWithLabels: ['first', 'second'],
-                    present: ['a', 'b'],
-                    presentWithLabels: ['first', 'second'],
-                    label: 'value',
-                    value: { a: 1, b: 'b' }
-                }
-            }]]);
-        });
-
         it('allows nested objects', () => {
 
             const schema = Joi.object({
@@ -2105,9 +1733,7 @@ describe('object', () => {
                     type: 'object.oxor',
                     context: {
                         peers: ['a', 'b.c'],
-                        peersWithLabels: ['a', 'b.c'],
                         present: ['a', 'b.c'],
-                        presentWithLabels: ['a', 'b.c'],
                         label: 'value',
                         value: { a: 'test', b: { c: 'test2' } }
                     }
@@ -2162,7 +1788,7 @@ describe('object', () => {
             }).pattern(/\d+/, Joi.boolean()).pattern(/\w\w+/, 'x');
 
             Helper.validate(schema, { abortEarly: false }, [[{ bb: 'y', 5: 'x' }, false, {
-                message: '"5" must be a boolean. "bb" must be [x]',
+                message: '"5" must be a boolean. "bb" must be one of [x]',
                 details: [
                     {
                         message: '"5" must be a boolean',
@@ -2171,7 +1797,7 @@ describe('object', () => {
                         context: { label: '5', key: '5', value: 'x' }
                     },
                     {
-                        message: '"bb" must be [x]',
+                        message: '"bb" must be one of [x]',
                         path: ['bb'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'bb', key: 'bb' }
@@ -2213,7 +1839,7 @@ describe('object', () => {
                 .pattern(Joi.string().length(2), 'x');
 
             Helper.validate(schema, { abortEarly: false }, [[{ bb: 'y', 5: 'x' }, false, {
-                message: '"5" must be a boolean. "bb" must be [x]',
+                message: '"5" must be a boolean. "bb" must be one of [x]',
                 details: [
                     {
                         message: '"5" must be a boolean',
@@ -2222,7 +1848,7 @@ describe('object', () => {
                         context: { label: '5', key: '5', value: 'x' }
                     },
                     {
-                        message: '"bb" must be [x]',
+                        message: '"bb" must be one of [x]',
                         path: ['bb'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'bb', key: 'bb' }
@@ -2308,7 +1934,7 @@ describe('object', () => {
             });
 
             Helper.validate(schema, { abortEarly: false }, [[{ x: { bb: 'y', 5: 'x' } }, false, {
-                message: '"x.5" must be a boolean. "x.bb" must be [x]',
+                message: '"x.5" must be a boolean. "x.bb" must be one of [x]',
                 details: [
                     {
                         message: '"x.5" must be a boolean',
@@ -2317,7 +1943,7 @@ describe('object', () => {
                         context: { label: 'x.5', key: '5', value: 'x' }
                     },
                     {
-                        message: '"x.bb" must be [x]',
+                        message: '"x.bb" must be one of [x]',
                         path: ['x', 'bb'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'x.bb', key: 'bb' }
@@ -2340,7 +1966,7 @@ describe('object', () => {
                     5: 'x'
                 }
             }, false, {
-                message: '"x.5" must be a boolean. "x.bb" must be [x]',
+                message: '"x.5" must be a boolean. "x.bb" must be one of [x]',
                 details: [
                     {
                         message: '"x.5" must be a boolean',
@@ -2349,7 +1975,7 @@ describe('object', () => {
                         context: { label: 'x.5', key: '5', value: 'x' }
                     },
                     {
-                        message: '"x.bb" must be [x]',
+                        message: '"x.bb" must be one of [x]',
                         path: ['x', 'bb'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'x.bb', key: 'bb' }
@@ -2378,7 +2004,7 @@ describe('object', () => {
                     context: {
                         details: [
                             {
-                                message: '"a[0]" must be [ref:....b]',
+                                message: '"a[0]" must be one of [ref:....b]',
                                 path: ['a', 0],
                                 type: 'any.only',
                                 context: {
@@ -2392,7 +2018,7 @@ describe('object', () => {
                         key: 'a',
                         label: 'a',
                         matches: ['x'],
-                        message: '"a[0]" must be [ref:....b]',
+                        message: '"a[0]" must be one of [ref:....b]',
                         value: { x: 1 }
                     }
                 }]
@@ -2454,123 +2080,6 @@ describe('object', () => {
 
             const schema = Joi.object().pattern(Joi.string().valid(Joi.in('$keys')), Joi.any());
             expect(schema.validate({ a: 'test' }, { context: { keys: ['a'] } })).to.equal({ value: { a: 'test' } });
-        });
-
-        it('enforces pattern matches rule', () => {
-
-            const ref1 = Joi.ref('a');              // .matches ..object
-            const ref2 = Joi.x('{a - 1}');
-
-            const schema = Joi.object({
-                a: Joi.number().required()
-            })
-                .pattern(/^x\d+$/, Joi.boolean(), { matches: Joi.array().length(ref1) })
-                .pattern(/^z\w+$/, Joi.number())
-                .pattern(/^x\w+$/, Joi.number(), { matches: Joi.array().max(ref2) });
-
-            Helper.validate(schema, [
-                [{ a: 1, x1: true }, true],
-                [{ a: 2, x1: true, x2: true, xx: 1 }, true],
-                [{ a: 3, x1: true, x2: true, x3: false, xx: 1 }, true],
-                [{ a: 0, x1: true }, false, {
-                    message: '"value" keys failed to match pattern requirements',
-                    path: [],
-                    type: 'object.pattern.match',
-                    context: {
-                        message: '"value" must contain ref:a items',
-                        label: 'value',
-                        value: { a: 0, x1: true },
-                        matches: ['x1'],
-                        details: [
-                            {
-                                context: {
-                                    label: 'value',
-                                    limit: ref1,
-                                    value: ['x1']
-                                },
-                                message: '"value" must contain ref:a items',
-                                path: [],
-                                type: 'array.length'
-                            }
-                        ]
-                    }
-                }],
-                [{ a: 1 }, false, '"value" keys failed to match pattern requirements']
-            ]);
-
-            const description = schema.describe();
-            expect(description).to.equal({
-                type: 'object',
-                keys: {
-                    a: {
-                        type: 'number',
-                        flags: {
-                            presence: 'required'
-                        }
-                    }
-                },
-                patterns: [
-                    {
-                        rule: {
-                            type: 'boolean'
-                        },
-                        regex: '/^x\\d+$/',
-                        matches: {
-                            type: 'array',
-                            rules: [
-                                {
-                                    name: 'length',
-                                    args: {
-                                        limit: {
-                                            ref: {
-                                                path: ['a']
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        rule: {
-                            type: 'number'
-                        },
-                        regex: '/^z\\w+$/'
-                    },
-                    {
-                        rule: {
-                            type: 'number'
-                        },
-                        regex: '/^x\\w+$/',
-                        matches: {
-                            type: 'array',
-                            rules: [
-                                {
-                                    name: 'max',
-                                    args: {
-                                        limit: {
-                                            template: '{a - 1}'
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                ]
-            });
-        });
-
-        it('enforces pattern matches rule (abortEarly false)', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().required()
-            })
-                .pattern(/^x\d+$/, Joi.boolean(), { matches: Joi.array().length(Joi.ref('a')) })
-                .pattern(/^x\w+$/, Joi.number(), { matches: Joi.array().max(Joi.x('{a - 1}')) });
-
-            const err = schema.validate({ a: 0, x1: true, xx: 1 }, { abortEarly: false }).error;
-            expect(err).to.be.an.error('"value" keys failed to match pattern requirements');
-            expect(err.details).to.have.length(2);
         });
 
         it('matches matching keys to grandparents', () => {
@@ -2892,44 +2401,6 @@ describe('object', () => {
             Helper.validate(schema, [[input, true, input]]);
         });
 
-        it('should fulfill describe() with defaults', () => {
-
-            const schema = Joi.object().rename('b', 'a');
-            const desc = schema.describe();
-
-            expect(desc).to.equal({
-                type: 'object',
-                renames: [{
-                    from: 'b',
-                    to: 'a',
-                    options: {
-                        alias: false,
-                        multiple: false,
-                        override: false
-                    }
-                }]
-            });
-        });
-
-        it('should fulfill describe() with non-defaults', () => {
-
-            const schema = Joi.object().rename('b', 'a', { alias: true, multiple: true, override: true });
-            const desc = schema.describe();
-
-            expect(desc).to.equal({
-                type: 'object',
-                renames: [{
-                    from: 'b',
-                    to: 'a',
-                    options: {
-                        alias: true,
-                        multiple: true,
-                        override: true
-                    }
-                }]
-            });
-        });
-
         it('should leave key if from does not exist regardless of override', () => {
 
             const schema = Joi.object()
@@ -2967,139 +2438,6 @@ describe('object', () => {
                 }).rename(regex, 'b', { alias: true });
 
                 Helper.validate(Joi.compile(schema), [[{ other: 'here', A: 100, c: 50 }, true, { other: 'here', A: 100, b: 100, c: 50 }]]);
-            });
-
-            it('uses template', () => {
-
-                const schema = Joi.object()
-                    .rename(/^(\d+)$/, Joi.x('x{#1}x'))
-                    .pattern(/^x\d+x$/, Joi.any());
-
-                const input = {
-                    123: 'x',
-                    1: 'y',
-                    0: 'z',
-                    x4x: 'test'
-                };
-
-                Helper.validate(Joi.compile(schema), [[input, true, {
-                    x123x: 'x',
-                    x1x: 'y',
-                    x0x: 'z',
-                    x4x: 'test'
-                }]]);
-
-                expect(schema.describe()).to.equal({
-                    type: 'object',
-                    patterns: [{
-                        regex: '/^x\\d+x$/',
-                        rule: { type: 'any' }
-                    }],
-                    renames: [{
-                        from: { regex: '/^(\\d+)$/' },
-                        to: {
-                            template: 'x{#1}x'
-                        },
-                        options: {
-                            alias: false,
-                            multiple: false,
-                            override: false
-                        }
-                    }]
-                });
-            });
-
-            it('uses template with prefix override', () => {
-
-                const schema = Joi.object()
-                    .rename(/^(\d+)$/, Joi.x('x{@1}x', { prefix: { local: '@' } }))
-                    .pattern(/^x\d+x$/, Joi.any());
-
-                const input = {
-                    123: 'x',
-                    1: 'y',
-                    0: 'z',
-                    x4x: 'test'
-                };
-
-                Helper.validate(Joi.compile(schema), [[input, true, {
-                    x123x: 'x',
-                    x1x: 'y',
-                    x0x: 'z',
-                    x4x: 'test'
-                }]]);
-
-                expect(schema.describe()).to.equal({
-                    type: 'object',
-                    patterns: [{
-                        regex: '/^x\\d+x$/',
-                        rule: { type: 'any' }
-                    }],
-                    renames: [{
-                        from: { regex: '/^(\\d+)$/' },
-                        to: {
-                            template: 'x{@1}x',
-                            options: { prefix: { local: '@' } }
-                        },
-                        options: {
-                            alias: false,
-                            multiple: false,
-                            override: false
-                        }
-                    }]
-                });
-            });
-
-            it('uses template that references another sibling key', () => {
-
-                const schema = Joi.object({
-                    prefix: Joi.string().lowercase().required()
-                })
-                    .rename(/^(\d+)$/, Joi.x('{.prefix}{#1}'))
-                    .unknown();
-
-                const input = {
-                    123: 'x',
-                    1: 'y',
-                    0: 'z',
-                    prefix: 'TEST'
-                };
-
-                Helper.validate(Joi.compile(schema), [[input, true, {
-                    TEST123: 'x',
-                    TEST1: 'y',
-                    TEST0: 'z',
-                    prefix: 'test'
-                }]]);
-            });
-
-            it('uses template that references peer key', () => {
-
-                const schema = Joi.object({
-                    a: Joi.object()
-                        .rename(/^(\d+)$/, Joi.x('{b.prefix}{#1}'))
-                        .unknown(),
-                    b: {
-                        prefix: Joi.string().lowercase()
-                    }
-                });
-
-                Helper.validate(schema, [
-                    [{ a: { 5: 'x' }, b: { prefix: 'p' } }, true, { a: { p5: 'x' }, b: { prefix: 'p' } }],
-                    [{ a: { 5: 'x' }, b: { prefix: 'P' } }, true, { a: { p5: 'x' }, b: { prefix: 'p' } }],
-                    [{ b: { prefix: 'P' }, a: { 5: 'x' } }, true, { a: { p5: 'x' }, b: { prefix: 'p' } }],
-                    [{ b: {}, a: { 5: 'x' } }, true, { a: { 5: 'x' }, b: {} }],
-                    [{ a: { 5: 'x' } }, true, { a: { 5: 'x' } }]
-                ]);
-            });
-
-            it('uses template without refs', () => {
-
-                const schema = Joi.object()
-                    .rename(/^(\d+)$/, Joi.x('x'))
-                    .unknown();
-
-                Helper.validate(Joi.compile(schema), [[{ 1: 'x' }, true, { x: 'x' }]]);
             });
 
             it('deletes a key with override if present and undefined', () => {
@@ -3257,48 +2595,6 @@ describe('object', () => {
                 Helper.validate(schema, [[input, true, { a: 'something else' }]]);
             });
 
-            it('should fulfill describe() with non-defaults', () => {
-
-                const regex = /^b$/i;
-
-                const schema = Joi.object().rename(regex, 'a', { alias: true, multiple: true, override: true });
-                const desc = schema.describe();
-
-                expect(desc).to.equal({
-                    type: 'object',
-                    renames: [{
-                        from: { regex: regex.toString() },
-                        to: 'a',
-                        options: {
-                            alias: true,
-                            multiple: true,
-                            override: true
-                        }
-                    }]
-                });
-            });
-
-            it('should fulfill describe() with defaults', () => {
-
-                const regex = /^b$/i;
-
-                const schema = Joi.object().rename(regex, 'a');
-                const desc = schema.describe();
-
-                expect(desc).to.equal({
-                    type: 'object',
-                    renames: [{
-                        from: { regex: regex.toString() },
-                        to: 'a',
-                        options: {
-                            alias: false,
-                            multiple: false,
-                            override: false
-                        }
-                    }]
-                });
-            });
-
             it('allows renaming multiple times with multiple enabled', () => {
 
                 const schema = Joi.object({
@@ -3416,99 +2712,6 @@ describe('object', () => {
         });
     });
 
-    describe('tailor()', () => {
-
-        it('customizes schema', () => {
-
-            const alterations = {
-                x: (s) => s.min(10),
-                y: (s) => s.max(50),
-                z: (s) => s.integer()
-            };
-
-            const before = Joi.object({
-                a: {
-                    b: Joi.number().alter(alterations)
-                },
-                b: Joi.object()
-                    .pattern(/.*/, Joi.number().alter(alterations)),
-                c: Joi.object({
-                    x: Joi.number(),
-                    y: Joi.number()
-                })
-                    .assert('.c.x', Joi.number().alter(alterations))
-            });
-
-            const bd = before.describe();
-
-            const first = before.tailor('x');
-
-            const c = Joi.object({
-                x: Joi.number(),
-                y: Joi.number()
-            })
-                .assert('.c.x', Joi.number().min(10).alter(alterations));
-
-            const after1 = Joi.object({
-                a: {
-                    b: Joi.number().min(10).alter(alterations)
-                },
-                b: Joi.object()
-                    .pattern(/.*/, Joi.number().min(10).alter(alterations)),
-                c
-            });
-
-            expect(first.describe()).to.equal(after1.describe());
-            expect(before.describe()).to.equal(bd);
-        });
-
-        it('customizes schema on object and keys', () => {
-
-            const alterations = {
-                x: (s) => s.min(10),
-                y: (s) => s.max(50),
-                z: (s) => s.integer()
-            };
-
-            const before = Joi.object({
-                a: {
-                    b: Joi.number().alter(alterations)
-                },
-                b: Joi.object()
-                    .pattern(/.*/, Joi.number().alter(alterations)),
-                c: Joi.object({
-                    x: Joi.number(),
-                    y: Joi.number()
-                })
-                    .assert('.c.x', Joi.number().alter(alterations))
-                    .alter(alterations)
-            });
-
-            const bd = before.describe();
-
-            const first = before.tailor('x');
-
-            const after1 = Joi.object({
-                a: {
-                    b: Joi.number().min(10).alter(alterations)
-                },
-                b: Joi.object()
-                    .pattern(/.*/, Joi.number().min(10).alter(alterations)),
-                c: Joi.object({
-                    x: Joi.number(),
-                    y: Joi.number()
-                })
-                    .alter(alterations)
-                    .assert('.c.x', Joi.number().min(10).alter(alterations))
-                    .min(10)
-            });
-
-            expect(first.describe()).to.equal(after1.describe());
-            Helper.equal(first, after1);
-            expect(before.describe()).to.equal(bd);
-        });
-    });
-
     describe('unknown()', () => {
 
         it('avoids unnecessary cloning when called twice', () => {
@@ -3612,9 +2815,7 @@ describe('object', () => {
                     type: 'object.with',
                     context: {
                         main: 'txt',
-                        mainWithLabel: 'txt',
                         peer: 'upc',
-                        peerWithLabel: 'upc',
                         label: 'value',
                         value: { txt: 'a' }
                     }
@@ -3629,9 +2830,7 @@ describe('object', () => {
                     type: 'object.with',
                     context: {
                         main: 'txt',
-                        mainWithLabel: 'txt',
                         peer: 'upc',
-                        peerWithLabel: 'upc',
                         label: 'value',
                         value: { txt: 'test' }
                     }
@@ -3654,9 +2853,7 @@ describe('object', () => {
                     type: 'object.with',
                     context: {
                         main: 'txt',
-                        mainWithLabel: 'txt',
                         peer: 'upc',
-                        peerWithLabel: 'upc',
                         label: 'value',
                         value: { txt: 'test', upc: undefined }
                     }
@@ -3697,27 +2894,6 @@ describe('object', () => {
             ]);
         });
 
-        it('applies labels', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.string().label('second')
-            }).with('a', ['b']);
-            Helper.validate(schema, [[{ a: 1 }, false, {
-                message: '"first" missing required peer "second"',
-                path: [],
-                type: 'object.with',
-                context: {
-                    main: 'a',
-                    mainWithLabel: 'first',
-                    peer: 'b',
-                    peerWithLabel: 'second',
-                    label: 'value',
-                    value: { a: 1 }
-                }
-            }]]);
-        });
-
         it('allows nested objects', () => {
 
             const schema = Joi.object({
@@ -3734,9 +2910,7 @@ describe('object', () => {
                     type: 'object.with',
                     context: {
                         main: 'a',
-                        mainWithLabel: 'a',
                         peer: 'b.c',
-                        peerWithLabel: 'b.c',
                         label: 'value',
                         value: { a: 'test', b: { d: 80 } }
                     }
@@ -3756,9 +2930,7 @@ describe('object', () => {
                     type: 'object.with',
                     context: {
                         main: 'a.b',
-                        mainWithLabel: 'a.b',
                         peer: 'b.c',
-                        peerWithLabel: 'b.c',
                         label: 'value',
                         value: { a: { b: 'test' }, b: {} }
                     }
@@ -3779,56 +2951,6 @@ describe('object', () => {
                 [{ a: 'test', b: Object.assign(() => { }, { c: 'test2' }) }, true, Helper.skip],
                 [{ a: 'test', b: Object.assign(() => { }, { d: 80 }) }, false, '"a" missing required peer "b.c"']
             ]);
-        });
-
-        it('applies labels with nested objects', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.object({
-                    c: Joi.string().label('second'),
-                    d: Joi.number()
-                })
-            })
-                .with('a', ['b.c']);
-
-            Helper.validate(schema, [[{ a: 1, b: { d: 2 } }, false, {
-                message: '"first" missing required peer "b.second"',
-                path: [],
-                type: 'object.with',
-                context: {
-                    main: 'a',
-                    mainWithLabel: 'first',
-                    peer: 'b.c',
-                    peerWithLabel: 'b.second',
-                    label: 'value',
-                    value: { a: 1, b: { d: 2 } }
-                }
-            }]]);
-
-            const schema2 = Joi.object({
-                a: Joi.object({
-                    b: Joi.string().label('first')
-                }),
-                b: Joi.object({
-                    c: Joi.string().label('second')
-                })
-            })
-                .with('a.b', ['b.c']);
-
-            Helper.validate(schema2, [[{ a: { b: 'test' }, b: {} }, false, {
-                message: '"a.first" missing required peer "b.second"',
-                path: [],
-                type: 'object.with',
-                context: {
-                    main: 'a.b',
-                    mainWithLabel: 'a.first',
-                    peer: 'b.c',
-                    peerWithLabel: 'b.second',
-                    label: 'value',
-                    value: { a: { b: 'test' }, b: {} }
-                }
-            }]]);
         });
 
         it('handles period in key names', () => {
@@ -3861,9 +2983,7 @@ describe('object', () => {
                     type: 'object.without',
                     context: {
                         main: 'txt',
-                        mainWithLabel: 'txt',
                         peer: 'upc',
-                        peerWithLabel: 'upc',
                         label: 'value',
                         value: { txt: 'a', upc: 'b' }
                     }
@@ -3892,9 +3012,7 @@ describe('object', () => {
                     type: 'object.without',
                     context: {
                         main: 'txt',
-                        mainWithLabel: 'txt',
                         peer: 'upc',
-                        peerWithLabel: 'upc',
                         label: 'value',
                         value: { txt: 'test', upc: 'test' }
                     }
@@ -3946,27 +3064,6 @@ describe('object', () => {
             ]);
         });
 
-        it('applies labels', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.string().label('second')
-            }).without('a', ['b']);
-            Helper.validate(schema, [[{ a: 1, b: 'b' }, false, {
-                message: '"first" conflict with forbidden peer "second"',
-                path: [],
-                type: 'object.without',
-                context: {
-                    main: 'a',
-                    mainWithLabel: 'first',
-                    peer: 'b',
-                    peerWithLabel: 'second',
-                    label: 'value',
-                    value: { a: 1, b: 'b' }
-                }
-            }]]);
-        });
-
         it('allows nested objects', () => {
 
             const schema = Joi.object({
@@ -3986,9 +3083,7 @@ describe('object', () => {
                     type: 'object.without',
                     context: {
                         main: 'a',
-                        mainWithLabel: 'a',
                         peer: 'b.d',
-                        peerWithLabel: 'b.d',
                         label: 'value',
                         value: sampleObject2
                     }
@@ -4018,39 +3113,11 @@ describe('object', () => {
                 type: 'object.without',
                 context: {
                     main: 'a',
-                    mainWithLabel: 'a',
                     peer: 'b.d',
-                    peerWithLabel: 'b.d',
                     label: 'value',
                     value: error2.details[0].context.value
                 }
             }]);
-        });
-
-        it('applies labels with nested objects', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.object({
-                    c: Joi.string().label('second'),
-                    d: Joi.number()
-                })
-            })
-                .without('a', ['b.c']);
-
-            Helper.validate(schema, [[{ a: 1, b: { c: 'c' } }, false, {
-                message: '"first" conflict with forbidden peer "b.second"',
-                path: [],
-                type: 'object.without',
-                context: {
-                    main: 'a',
-                    mainWithLabel: 'first',
-                    peer: 'b.c',
-                    peerWithLabel: 'b.second',
-                    label: 'value',
-                    value: { a: 1, b: { c: 'c' } }
-                }
-            }]]);
         });
 
         it('validates keys with prefix characters', () => {
@@ -4088,7 +3155,6 @@ describe('object', () => {
                     type: 'object.missing',
                     context: {
                         peers: ['txt', 'upc'],
-                        peersWithLabels: ['txt', 'upc'],
                         label: 'value',
                         value: {}
                     }
@@ -4154,9 +3220,7 @@ describe('object', () => {
                     type: 'object.xor',
                     context: {
                         peers: ['txt', 'upc'],
-                        peersWithLabels: ['txt', 'upc'],
                         present: ['txt', 'upc'],
-                        presentWithLabels: ['txt', 'upc'],
                         label: 'value',
                         value: { txt: 'test', upc: 'test' }
                     }
@@ -4181,7 +3245,6 @@ describe('object', () => {
                     type: 'object.missing',
                     context: {
                         peers: ['txt', 'upc', 'code'],
-                        peersWithLabels: ['txt', 'upc', 'code'],
                         label: 'value',
                         value: {}
                     }
@@ -4205,9 +3268,7 @@ describe('object', () => {
                     type: 'object.xor',
                     context: {
                         peers: ['code', 'upc'],
-                        peersWithLabels: ['code', 'upc'],
                         present: ['code', 'upc'],
-                        presentWithLabels: ['code', 'upc'],
                         label: 'value',
                         value: { code: 456, upc: 123 }
                     }
@@ -4218,7 +3279,6 @@ describe('object', () => {
                     type: 'object.missing',
                     context: {
                         peers: ['code', 'upc'],
-                        peersWithLabels: ['code', 'upc'],
                         label: 'value',
                         value: {}
                     }
@@ -4244,9 +3304,7 @@ describe('object', () => {
                     type: 'object.xor',
                     context: {
                         peers: ['code', 'upc'],
-                        peersWithLabels: ['code', 'upc'],
                         present: ['code', 'upc'],
-                        presentWithLabels: ['code', 'upc'],
                         label: 'value',
                         value: { code: '456', upc: '' }
                     }
@@ -4257,7 +3315,6 @@ describe('object', () => {
                     type: 'object.missing',
                     context: {
                         peers: ['code', 'upc'],
-                        peersWithLabels: ['code', 'upc'],
                         label: 'value',
                         value: {}
                     }
@@ -4269,75 +3326,6 @@ describe('object', () => {
 
             expect(() => Joi.object().xor({})).to.throw();
             expect(() => Joi.object().xor(123)).to.throw();
-        });
-
-        it('applies labels without any peer', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.string().label('second')
-            })
-                .xor('a', 'b');
-
-            Helper.validate(schema, [[{}, false, {
-                message: '"value" must contain at least one of [first, second]',
-                path: [],
-                type: 'object.missing',
-                context: {
-                    peers: ['a', 'b'],
-                    peersWithLabels: ['first', 'second'],
-                    label: 'value',
-                    value: {}
-                }
-            }]]);
-        });
-
-        it('applies labels with too many peers', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.string().label('second')
-            })
-                .xor('a', 'b');
-
-            Helper.validate(schema, [[{ a: 1, b: 'b' }, false, {
-                message: '"value" contains a conflict between exclusive peers [first, second]',
-                path: [],
-                type: 'object.xor',
-                context: {
-                    peers: ['a', 'b'],
-                    peersWithLabels: ['first', 'second'],
-                    present: ['a', 'b'],
-                    presentWithLabels: ['first', 'second'],
-                    label: 'value',
-                    value: { a: 1, b: 'b' }
-                }
-            }]]);
-        });
-
-        it('applies labels with too many peers', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.string().label('second'),
-                c: Joi.string().label('third'),
-                d: Joi.string().label('fourth')
-            })
-                .xor('a', 'b', 'c', 'd');
-
-            Helper.validate(schema, [[{ a: 1, b: 'b', d: 'd' }, false, {
-                message: '"value" contains a conflict between exclusive peers [first, second, third, fourth]',
-                path: [],
-                type: 'object.xor',
-                context: {
-                    peers: ['a', 'b', 'c', 'd'],
-                    peersWithLabels: ['first', 'second', 'third', 'fourth'],
-                    present: ['a', 'b', 'd'],
-                    presentWithLabels: ['first', 'second', 'fourth'],
-                    label: 'value',
-                    value: { a: 1, b: 'b', d: 'd' }
-                }
-            }]]);
         });
 
         it('allows nested objects', () => {
@@ -4368,56 +3356,6 @@ describe('object', () => {
                 [{ a: 'test', b: Object.assign(() => { }, { d: 80 }) }, true, Helper.skip],
                 [{ a: 'test', b: Object.assign(() => { }, { c: 'test2' }) }, false, '"value" contains a conflict between exclusive peers [a, b.c]']
             ]);
-        });
-
-        it('applies labels without any nested peers', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.object({
-                    c: Joi.string().label('second'),
-                    d: Joi.number()
-                })
-            })
-                .xor('a', 'b.c');
-
-            Helper.validate(schema, [[{}, false, {
-                message: '"value" must contain at least one of [first, b.second]',
-                path: [],
-                type: 'object.missing',
-                context: {
-                    peers: ['a', 'b.c'],
-                    peersWithLabels: ['first', 'b.second'],
-                    label: 'value',
-                    value: {}
-                }
-            }]]);
-        });
-
-        it('applies labels with too many nested peers', () => {
-
-            const schema = Joi.object({
-                a: Joi.number().label('first'),
-                b: Joi.object({
-                    c: Joi.string().label('second'),
-                    d: Joi.number()
-                })
-            })
-                .xor('a', 'b.c');
-
-            Helper.validate(schema, [[{ a: 1, b: { c: 'c' } }, false, {
-                message: '"value" contains a conflict between exclusive peers [first, b.second]',
-                path: [],
-                type: 'object.xor',
-                context: {
-                    peers: ['a', 'b.c'],
-                    peersWithLabels: ['first', 'b.second'],
-                    present: ['a', 'b.c'],
-                    presentWithLabels: ['first', 'b.second'],
-                    label: 'value',
-                    value: { a: 1, b: { c: 'c' } }
-                }
-            }]]);
         });
 
         it('handles period in key names', () => {

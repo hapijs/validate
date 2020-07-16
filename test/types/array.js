@@ -55,73 +55,6 @@ describe('array', () => {
         });
     });
 
-    describe('describe()', () => {
-
-        it('returns an empty description when no rules are applied', () => {
-
-            const schema = Joi.array();
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'array'
-            });
-        });
-
-        it('returns an updated description when sparse rule is applied', () => {
-
-            const schema = Joi.array().sparse();
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'array',
-                flags: { sparse: true }
-            });
-        });
-
-        it('returns an items array only if items are specified', () => {
-
-            const schema = Joi.array().items().max(5);
-            const desc = schema.describe();
-            expect(desc.items).to.not.exist();
-        });
-
-        it('returns a recursively defined array of items when specified', () => {
-
-            const schema = Joi.array()
-                .items(Joi.number(), Joi.string())
-                .items(Joi.boolean().forbidden())
-                .ordered(Joi.number(), Joi.string())
-                .ordered(Joi.string().required());
-            const desc = schema.describe();
-            expect(desc.items).to.have.length(3);
-            expect(desc).to.equal({
-                type: 'array',
-                ordered: [
-                    { type: 'number' },
-                    { type: 'string' },
-                    { type: 'string', flags: { presence: 'required' } }
-                ],
-                items: [
-                    { type: 'number' },
-                    { type: 'string' },
-                    { type: 'boolean', flags: { presence: 'forbidden' } }
-                ]
-            });
-        });
-
-        it('describes an array with array items', () => {
-
-            const schema = Joi.array().items(Joi.array());
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'array',
-                items: [
-                    {
-                        type: 'array'
-                    }
-                ]
-            });
-        });
-    });
-
     describe('has()', () => {
 
         it('shows path to errors in schema', () => {
@@ -187,13 +120,13 @@ describe('array', () => {
 
         it('throws with proper message if assertion fails on known schema', () => {
 
-            const schema = Joi.array().has(Joi.string().label('foo'));
+            const schema = Joi.array().has(Joi.string());
             Helper.validate(schema, [
                 [[0], false, {
-                    message: '"value" does not contain at least one required match for type "foo"',
+                    message: '"value" does not contain at least one required match',
                     path: [],
-                    type: 'array.hasKnown',
-                    context: { label: 'value', patternLabel: 'foo', value: [0] }
+                    type: 'array.hasUnknown',
+                    context: { label: 'value', value: [0] }
                 }]
             ]);
         });
@@ -277,18 +210,6 @@ describe('array', () => {
                     context: { label: 'value', value: ['foo'] }
                 }]
             ]);
-        });
-
-        it('describes the pattern schema', () => {
-
-            const schema = Joi.array().has(Joi.string()).has(Joi.number());
-            expect(schema.describe()).to.equal({
-                type: 'array',
-                rules: [
-                    { name: 'has', args: { schema: { type: 'string' } } },
-                    { name: 'has', args: { schema: { type: 'number' } } }
-                ]
-            });
         });
     });
 
@@ -540,39 +461,6 @@ describe('array', () => {
 
             Helper.validate(schema, [
                 [[true, 'one', false, 'two'], true]
-            ]);
-        });
-
-        it('can use a label on a required parameter', () => {
-
-            const schema = Joi.array().items(Joi.string().required().label('required string'), Joi.boolean());
-
-            Helper.validate(schema, [
-                [[true, false], false, {
-                    message: '"value" does not contain [required string]',
-                    path: [],
-                    type: 'array.includesRequiredKnowns',
-                    context: { knownMisses: ['required string'], label: 'value', value: [true, false] }
-                }]
-            ]);
-        });
-
-        it('can use a label on one required parameter, and no label on another', () => {
-
-            const schema = Joi.array().items(Joi.string().required().label('required string'), Joi.string().required(), Joi.boolean());
-
-            Helper.validate(schema, [
-                [[true, false], false, {
-                    message: '"value" does not contain [required string] and 1 other required value(s)',
-                    path: [],
-                    type: 'array.includesRequiredBoth',
-                    context: {
-                        knownMisses: ['required string'],
-                        unknownMisses: 1,
-                        label: 'value',
-                        value: [true, false]
-                    }
-                }]
             ]);
         });
 
@@ -1405,23 +1293,6 @@ describe('array', () => {
             expect(() => Joi.array().single().ordered(Joi.alternatives([Joi.array()]))).to.throw('Cannot specify array item with single rule enabled');
         });
 
-        it('switches the single flag with explicit value', () => {
-
-            const schema = Joi.array().single(true);
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'array',
-                flags: { single: true }
-            });
-        });
-
-        it('switches the single flag back', () => {
-
-            const schema = Joi.array().single().single(false);
-            const desc = schema.describe();
-            expect(desc).to.equal({ type: 'array' });
-        });
-
         it('avoids unnecessary cloning when called twice', () => {
 
             const schema = Joi.array().single();
@@ -1764,71 +1635,6 @@ describe('array', () => {
             ]);
         });
 
-        it('errors on undefined value after custom validation with required', () => {
-
-            const custom = Joi.extend({
-                type: 'extended',
-                rules: {
-                    foo: {
-                        method() {
-
-                            return this.$_addRule('foo');
-                        },
-                        validate: () => undefined
-                    }
-                }
-            });
-
-            const schema = custom.array().items(custom.extended().foo().required());
-
-            Helper.validate(schema, [
-                [[{}, { c: 3 }], false, {
-                    message: '"[0]" must not be a sparse array item',
-                    path: [0],
-                    type: 'array.sparse',
-                    context: { label: '[0]', key: 0, path: [0], pos: 0, value: undefined }
-                }]
-            ]);
-        });
-
-        it('errors on undefined value after custom validation with required and abortEarly false', () => {
-
-            const custom = Joi.extend({
-                type: 'extended',
-                rules: {
-                    foo: {
-                        method() {
-
-                            return this.$_addRule('foo');
-                        },
-                        validate: () => undefined
-                    }
-                }
-            });
-
-            const schema = custom.array().items(custom.extended().foo().required()).prefs({ abortEarly: false });
-
-            Helper.validate(schema, [
-                [[{}, { c: 3 }], false, {
-                    message: '"[0]" must not be a sparse array item. "[1]" must not be a sparse array item',
-                    details: [
-                        {
-                            message: '"[0]" must not be a sparse array item',
-                            path: [0],
-                            type: 'array.sparse',
-                            context: { label: '[0]', key: 0, path: [0], pos: 0, value: undefined }
-                        },
-                        {
-                            message: '"[1]" must not be a sparse array item',
-                            path: [1],
-                            type: 'array.sparse',
-                            context: { label: '[1]', key: 1, path: [1], pos: 1, value: undefined }
-                        }
-                    ]
-                }]
-            ]);
-        });
-
         it('errors on undefined value after validation with required and abortEarly false', () => {
 
             const schema = Joi.array().items(Joi.object().empty({}).required()).prefs({ abortEarly: false });
@@ -1939,35 +1745,6 @@ describe('array', () => {
             Helper.validate(schema, [
                 [[{}], true, [undefined]]
             ]);
-        });
-
-        it('switches the sparse flag', () => {
-
-            const schema = Joi.array().sparse();
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'array',
-                flags: { sparse: true }
-            });
-        });
-
-        it('switches the sparse flag with explicit value', () => {
-
-            const schema = Joi.array().sparse(true);
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'array',
-                flags: { sparse: true }
-            });
-        });
-
-        it('switches the sparse flag back', () => {
-
-            const schema = Joi.array().sparse().sparse(false);
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'array'
-            });
         });
 
         it('avoids unnecessary cloning when called twice', () => {

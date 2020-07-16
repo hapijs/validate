@@ -515,19 +515,6 @@ describe('boolean', () => {
                 ['no', true, false]
             ]);
         });
-
-        it('should describe truthy and falsy values', () => {
-
-            const schema = Joi.boolean().truthy('yes').falsy('no').required().describe();
-            expect(schema).to.equal({
-                type: 'boolean',
-                flags: {
-                    presence: 'required'
-                },
-                truthy: ['yes'],
-                falsy: ['no']
-            });
-        });
     });
 
     describe('truthy()', () => {

@@ -31,12 +31,6 @@ describe('ref', () => {
         expect(() => schema.validate({ a: 1, b: 2 })).to.throw('Invalid reference exceeds the schema root: ref:...c');
     });
 
-    it('reaches self', () => {
-
-        const schema = Joi.number().min(10).message('{#label} is {[.]} and that is not good enough');
-        Helper.validate(schema, [[1, false, '"value" is 1 and that is not good enough']]);
-    });
-
     it('reaches own property', () => {
 
         const schema = Joi.object({
@@ -100,34 +94,6 @@ describe('ref', () => {
                 }, true
             ]
         ]);
-
-        expect(schema.describe()).to.equal({
-            type: 'object',
-            keys: {
-                a: {
-                    type: 'any'
-                },
-                b: {
-                    type: 'object',
-                    keys: {
-                        a1: {
-                            flags: {
-                                only: true
-                            },
-                            type: 'any',
-                            allow: [{ override: true }, { ref: { ancestor: 2, path: ['a'] } }]
-                        },
-                        a2: {
-                            flags: {
-                                only: true
-                            },
-                            type: 'any',
-                            allow: [{ override: true }, { ref: { ancestor: 2, path: ['a'] } }]
-                        }
-                    }
-                }
-            }
-        });
     });
 
     it('reaches literal', () => {
@@ -151,30 +117,6 @@ describe('ref', () => {
                 }, true
             ]
         ]);
-
-        expect(schema.describe()).to.equal({
-            type: 'object',
-            keys: {
-                a: {
-                    type: 'any'
-                },
-                b: {
-                    type: 'object',
-                    keys: {
-                        '...a': {
-                            type: 'any'
-                        },
-                        c: {
-                            flags: {
-                                only: true
-                            },
-                            type: 'any',
-                            allow: [{ override: true }, { ref: { path: ['...a'], separator: false } }]
-                        }
-                    }
-                }
-            }
-        });
     });
 
     it('reaches ancestor literal', () => {
@@ -271,7 +213,7 @@ describe('ref', () => {
                     },
                     h: 4
                 }, false, {
-                    message: '"a.b.ix" must be [ref:...i]',
+                    message: '"a.b.ix" must be one of [ref:...i]',
                     path: ['a', 'b', 'ix'],
                     type: 'any.only',
                     context: {
@@ -354,7 +296,7 @@ describe('ref', () => {
                     },
                     h: 4
                 }, false, {
-                    message: '"a.b.ix" must be [ref:...i]',
+                    message: '"a.b.ix" must be one of [ref:...i]',
                     path: ['a', 'b', 'ix'],
                     type: 'any.only',
                     context: {
@@ -476,7 +418,7 @@ describe('ref', () => {
         }]]);
 
         value.d = 6;
-        Helper.validate(schema, [[value, false, '"d" must be [ref:a.b.2.y.w]']]);
+        Helper.validate(schema, [[value, false, '"d" must be one of [ref:a.b.2.y.w]']]);
     });
 
     it('reaches root', () => {
@@ -492,34 +434,6 @@ describe('ref', () => {
         Helper.validate(schema, [
             [{ a: 1, b: { c: 1, d: 1 } }, true]
         ]);
-
-        expect(schema.describe()).to.equal({
-            type: 'object',
-            keys: {
-                a: {
-                    type: 'any'
-                },
-                b: {
-                    type: 'object',
-                    keys: {
-                        c: {
-                            flags: {
-                                only: true
-                            },
-                            type: 'any',
-                            allow: [{ override: true }, { ref: { ancestor: 'root', path: ['a'] } }]
-                        },
-                        d: {
-                            flags: {
-                                only: true
-                            },
-                            type: 'any',
-                            allow: [{ override: true }, { ref: { ancestor: 'root', path: ['a'] } }]
-                        }
-                    }
-                }
-            }
-        });
     });
 
     it('errors on missing iterables flag when reaching into set and map', () => {
@@ -552,7 +466,7 @@ describe('ref', () => {
             d: 5
         };
 
-        Helper.validate(schema, [[value, false, '"d" must be [ref:a.b.2.y.w]']]);
+        Helper.validate(schema, [[value, false, '"d" must be one of [ref:a.b.2.y.w]']]);
     });
 
     it('errors on invalid separator)', () => {
@@ -608,7 +522,7 @@ describe('ref', () => {
             [{ x: [1] }, true],
             [{ x: [2, 2] }, true],
             [{ x: [2, 2, 2] }, false, {
-                message: '"x[0]" must be [ref:length]',
+                message: '"x[0]" must be one of [ref:length]',
                 path: ['x', 0],
                 type: 'any.only',
                 context: {
@@ -635,7 +549,7 @@ describe('ref', () => {
             [{ x: [7, 7, 7] }, true],
             [{ x: [2, 2] }, true],
             [{ x: [2, 2, 2] }, false, {
-                message: '"x[0]" must be [7]',
+                message: '"x[0]" must be one of [7]',
                 path: ['x', 0],
                 type: 'any.only',
                 context: { value: 2, valids: [7], key: 0, label: 'x[0]' }
@@ -696,7 +610,7 @@ describe('ref', () => {
         });
 
         Helper.validate(schema, [[{ a: 5, b: 6 }, false, {
-            message: '"a" must be [ref:b]',
+            message: '"a" must be one of [ref:b]',
             path: ['a'],
             type: 'any.only',
             context: { value: 5, valids: [ref], label: 'a', key: 'a' }
@@ -704,7 +618,7 @@ describe('ref', () => {
 
         Helper.validate(schema, [
             [{ a: 5 }, false, {
-                message: '"a" must be [ref:b]',
+                message: '"a" must be one of [ref:b]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: 5, valids: [ref], label: 'a', key: 'a' }
@@ -729,32 +643,18 @@ describe('ref', () => {
             [{ a: 10, b: 5 }, true],
             [{ a: 10, b: '5' }, true, { a: 10, b: 5 }],
             [{ a: 5 }, false, {
-                message: '"a" must be [ref:b]',
+                message: '"a" must be one of [ref:b]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: 5, valids: [ref], label: 'a', key: 'a' }
             }],
             [{ a: 5, b: 5 }, false, {
-                message: '"a" must be [ref:b]',
+                message: '"a" must be one of [ref:b]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: 5, valids: [ref], label: 'a', key: 'a' }
             }]
         ]);
-
-        expect(schema.describe()).to.equal({
-            type: 'object',
-            keys: {
-                b: {
-                    type: 'number'
-                },
-                a: {
-                    type: 'any',
-                    flags: { only: true },
-                    allow: [{ override: true }, { ref: { path: ['b'], adjust } }]
-                }
-            }
-        });
     });
 
     it('sets map', () => {
@@ -771,32 +671,18 @@ describe('ref', () => {
             [{ a: 10, b: 5 }, true],
             [{ a: 10, b: '5' }, true, { a: 10, b: 5 }],
             [{ a: 5 }, false, {
-                message: '"a" must be [ref:b]',
+                message: '"a" must be one of [ref:b]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: 5, valids: [ref], label: 'a', key: 'a' }
             }],
             [{ a: 5, b: 5 }, false, {
-                message: '"a" must be [ref:b]',
+                message: '"a" must be one of [ref:b]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: 5, valids: [ref], label: 'a', key: 'a' }
             }]
         ]);
-
-        expect(schema.describe()).to.equal({
-            type: 'object',
-            keys: {
-                b: {
-                    type: 'number'
-                },
-                a: {
-                    type: 'any',
-                    flags: { only: true },
-                    allow: [{ override: true }, { ref: { path: ['b'], map } }]
-                }
-            }
-        });
     });
 
     it('uses ref as a valid value (empty key)', () => {
@@ -809,13 +695,13 @@ describe('ref', () => {
 
         Helper.validate(schema, [
             [{ a: 5, '': 6 }, false, {
-                message: '"a" must be [ref:..]',
+                message: '"a" must be one of [ref:..]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: 5, valids: [ref], label: 'a', key: 'a' }
             }],
             [{ a: 5 }, false, {
-                message: '"a" must be [ref:..]',
+                message: '"a" must be one of [ref:..]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: 5, valids: [ref], label: 'a', key: 'a' }
@@ -838,9 +724,9 @@ describe('ref', () => {
 
         const err = schema.validate({ a: 5, b: { c: 6 } }).error;
 
-        expect(err).to.be.an.error('"a" must be [ref:b.c]');
+        expect(err).to.be.an.error('"a" must be one of [ref:b.c]');
         expect(err.details).to.equal([{
-            message: '"a" must be [ref:b.c]',
+            message: '"a" must be one of [ref:b.c]',
             path: ['a'],
             type: 'any.only',
             context: { value: 5, valids: [ref], label: 'a', key: 'a' }
@@ -848,7 +734,7 @@ describe('ref', () => {
 
         Helper.validate(schema, [
             [{ a: 5 }, false, {
-                message: '"a" must be [ref:b.c]',
+                message: '"a" must be one of [ref:b.c]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: 5, valids: [ref], label: 'a', key: 'a' }
@@ -922,37 +808,37 @@ describe('ref', () => {
         Helper.validate(ba, [[{ a: { c: '5' }, b: 5 }, true, { a: { c: 5 }, b: 5 }]]);
     });
 
-    it('uses ref as default value', async () => {
+    it('uses ref as default value', () => {
 
         const schema = Joi.object({
             a: Joi.any().default(Joi.ref('b')),
             b: Joi.any()
         });
 
-        const value = await schema.validateAsync({ b: 6 });
+        const value = schema.validate({ b: 6 }).value;
         expect(value).to.equal({ a: 6, b: 6 });
     });
 
-    it('uses ref mixed with normal values', async () => {
+    it('uses ref mixed with normal values', () => {
 
         const schema = Joi.object({
             a: Joi.number().valid(1, Joi.ref('b')),
             b: Joi.any()
         });
 
-        expect(await schema.validateAsync({ a: 6, b: 6 })).to.equal({ a: 6, b: 6 });
-        expect(await schema.validateAsync({ a: 1, b: 6 })).to.equal({ a: 1, b: 6 });
+        expect(schema.validate({ a: 6, b: 6 }).value).to.equal({ a: 6, b: 6 });
+        expect(schema.validate({ a: 1, b: 6 }).value).to.equal({ a: 1, b: 6 });
         Helper.validate(schema, [[{ a: 6, b: 1 }, false, '"a" must be one of [1, ref:b]']]);
     });
 
-    it('uses ref as default value regardless of order', async () => {
+    it('uses ref as default value regardless of order', () => {
 
         const ab = Joi.object({
             a: Joi.any().default(Joi.ref('b')),
             b: Joi.number()
         });
 
-        const value = await ab.validateAsync({ b: '6' });
+        const value = ab.validate({ b: '6' }).value;
         expect(value).to.equal({ a: 6, b: 6 });
 
         const ba = Joi.object({
@@ -960,7 +846,7 @@ describe('ref', () => {
             a: Joi.any().default(Joi.ref('b'))
         });
 
-        const value2 = await ba.validateAsync({ b: '6' });
+        const value2 = ba.validate({ b: '6' }).value;
         expect(value2).to.equal({ a: 6, b: 6 });
     });
 
@@ -992,25 +878,25 @@ describe('ref', () => {
         }
     });
 
-    it('uses context as default value', async () => {
+    it('uses context as default value', () => {
 
         const schema = Joi.object({
             a: Joi.any().default(Joi.ref('$x')),
             b: Joi.any()
         });
 
-        const value = await schema.validateAsync({ b: 6 }, { context: { x: 22 } });
+        const value = schema.validate({ b: 6 }, { context: { x: 22 } }).value;
         expect(value).to.equal({ a: 22, b: 6 });
     });
 
-    it('uses context as default value with custom prefix', async () => {
+    it('uses context as default value with custom prefix', () => {
 
         const schema = Joi.object({
             a: Joi.any().default(Joi.ref('@x', { prefix: { global: '@' } })),
             b: Joi.any()
         });
 
-        const value = await schema.validateAsync({ b: 6 }, { context: { x: 22 } });
+        const value = schema.validate({ b: 6 }, { context: { x: 22 } }).value;
         expect(value).to.equal({ a: 22, b: 6 });
     });
 
@@ -1024,13 +910,13 @@ describe('ref', () => {
 
         Helper.validate(schema, { context: { x: 22 } }, [
             [{ a: 5, b: 6 }, false, {
-                message: '"a" must be [ref:global:x]',
+                message: '"a" must be one of [ref:global:x]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: 5, valids: [ref], label: 'a', key: 'a' }
             }],
             [{ a: 5 }, false, {
-                message: '"a" must be [ref:global:x]',
+                message: '"a" must be one of [ref:global:x]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: 5, valids: [ref], label: 'a', key: 'a' }
@@ -1039,7 +925,7 @@ describe('ref', () => {
             [{ b: 5 }, true],
             [{ a: 22, b: 5 }, true],
             [{ a: '22', b: '5' }, false, {
-                message: '"a" must be [ref:global:x]',
+                message: '"a" must be one of [ref:global:x]',
                 path: ['a'],
                 type: 'any.only',
                 context: { value: '22', valids: [ref], label: 'a', key: 'a' }
@@ -1177,81 +1063,6 @@ describe('ref', () => {
             }],
             [{ a: true }, true]
         ]);
-    });
-
-    it('describes schema with ref', () => {
-
-        const schema = Joi
-            .valid(Joi.ref('a.b'))
-            .invalid(Joi.ref('$b.c'))
-            .default(Joi.ref('a.b'))
-            .when('a.b', {
-                is: Joi.date().min(Joi.ref('a.b')).max(Joi.ref('a.b')),
-                then: Joi.number().min(Joi.ref('a.b')).max(Joi.ref('a.b')).greater(Joi.ref('a.b')).less(Joi.ref('a.b')),
-                otherwise: Joi.object({
-                    a: Joi.string().min(Joi.ref('b.c')).max(Joi.ref('b.c')).length(Joi.ref('b.c'))
-                }).with('a', 'b').without('b', 'c').assert('a.b', Joi.ref('a.b'))
-            });
-
-        expect(schema.describe()).to.equal({
-            type: 'any',
-            flags: { only: true, default: { ref: { path: ['a', 'b'] } } },
-            allow: [{ ref: { path: ['a', 'b'] } }],
-            invalid: [{ ref: { type: 'global', path: ['b', 'c'] } }],
-            whens: [{
-                ref: { path: ['a', 'b'] },
-                is: {
-                    type: 'date',
-                    rules: [
-                        { name: 'min', args: { date: { ref: { path: ['a', 'b'] } } } },
-                        { name: 'max', args: { date: { ref: { path: ['a', 'b'] } } } }
-                    ]
-                },
-                then: {
-                    type: 'number',
-                    rules: [
-                        { name: 'min', args: { limit: { ref: { path: ['a', 'b'] } } } },
-                        { name: 'max', args: { limit: { ref: { path: ['a', 'b'] } } } },
-                        { name: 'greater', args: { limit: { ref: { path: ['a', 'b'] } } } },
-                        { name: 'less', args: { limit: { ref: { path: ['a', 'b'] } } } }
-                    ]
-                },
-                otherwise: {
-                    type: 'object',
-                    rules: [{
-                        name: 'assert',
-                        args: {
-                            schema: {
-                                type: 'any',
-                                flags: { only: true },
-                                allow: [{ override: true }, { ref: { path: ['a', 'b'] } }]
-                            },
-                            subject: { ref: { path: ['a', 'b'] } }
-                        }
-                    }],
-                    keys: {
-                        a: {
-                            type: 'string',
-                            rules: [
-                                { name: 'min', args: { limit: { ref: { path: ['b', 'c'] } } } },
-                                { name: 'max', args: { limit: { ref: { path: ['b', 'c'] } } } },
-                                { name: 'length', args: { limit: { ref: { path: ['b', 'c'] } } } }
-                            ]
-                        }
-                    },
-                    dependencies: [{
-                        rel: 'with',
-                        key: 'a',
-                        peers: ['b']
-                    },
-                    {
-                        rel: 'without',
-                        key: 'b',
-                        peers: ['c']
-                    }]
-                }
-            }]
-        });
     });
 
     describe('clone()', () => {

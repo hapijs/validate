@@ -104,23 +104,6 @@ describe('number', () => {
         });
     });
 
-    describe('describe()', () => {
-
-        it('describes a minimum of 0', () => {
-
-            const schema = Joi.number().min(0);
-            expect(schema.describe()).to.equal({
-                type: 'number',
-                rules: [
-                    {
-                        name: 'min',
-                        args: { limit: 0 }
-                    }
-                ]
-            });
-        });
-    });
-
     describe('greater()', () => {
 
         it('throws when limit is not a number', () => {
@@ -574,13 +557,13 @@ describe('number', () => {
                 [{ a: 1, b: 1, c: 0 }, true],
                 [{ a: 2, b: 1, c: 0 }, true],
                 [{ a: 1, b: 1, c: 42 }, false, {
-                    message: '"c" must be [0]',
+                    message: '"c" must be one of [0]',
                     path: ['c'],
                     type: 'any.only',
                     context: { value: 42, valids: [0], label: 'c', key: 'c' }
                 }],
                 [{ a: 2, b: 1, c: 42 }, false, {
-                    message: '"c" must be [0]',
+                    message: '"c" must be one of [0]',
                     path: ['c'],
                     type: 'any.only',
                     context: { value: 42, valids: [0], label: 'c', key: 'c' }
@@ -788,7 +771,7 @@ describe('number', () => {
                 [{ a: 2, b: 4, c: 42 }, true],
                 [{ a: 4, b: 2, c: 0 }, true],
                 [{ a: 4, b: 2, c: 42 }, false, {
-                    message: '"c" must be [0]',
+                    message: '"c" must be one of [0]',
                     path: ['c'],
                     type: 'any.only',
                     context: { value: 42, valids: [0], label: 'c', key: 'c' }

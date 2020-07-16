@@ -3,7 +3,6 @@
 const Code = require('@hapi/code');
 const Joi = require('..');
 const Lab = require('@hapi/lab');
-const Legacy = require('@hapi/joi-legacy-test');
 
 const Helper = require('./helper');
 
@@ -19,21 +18,11 @@ describe('cast', () => {
 
     describe('schema()', () => {
 
-        it('casts templates', () => {
-
-            const schema = Joi.object({
-                a: Joi.number(),
-                b: Joi.x('{a + 1}')
-            });
-
-            Helper.validate(schema, [[{ a: 5, b: 6 }, true]]);
-        });
-
         it('compiles null schema', () => {
 
             Helper.validate(Joi.compile(null), [
                 ['a', false, {
-                    message: '"value" must be [null]',
+                    message: '"value" must be one of [null]',
                     path: [],
                     type: 'any.only',
                     context: { value: 'a', valids: [null], label: 'value' }
@@ -46,7 +35,7 @@ describe('cast', () => {
 
             Helper.validate(Joi.compile(5), [
                 [6, false, {
-                    message: '"value" must be [5]',
+                    message: '"value" must be one of [5]',
                     path: [],
                     type: 'any.only',
                     context: { value: 6, valids: [5], label: 'value' }
@@ -59,7 +48,7 @@ describe('cast', () => {
 
             Helper.validate(Joi.compile('5'), [
                 ['6', false, {
-                    message: '"value" must be [5]',
+                    message: '"value" must be one of [5]',
                     path: [],
                     type: 'any.only',
                     context: { value: '6', valids: ['5'], label: 'value' }
@@ -72,7 +61,7 @@ describe('cast', () => {
 
             Helper.validate(Joi.compile(true), [
                 [false, false, {
-                    message: '"value" must be [true]',
+                    message: '"value" must be one of [true]',
                     path: [],
                     type: 'any.only',
                     context: { value: false, valids: [true], label: 'value' }
@@ -89,7 +78,7 @@ describe('cast', () => {
                 [new Date(now), true],
                 [now, true, new Date(now)],
                 [now * 2, false, {
-                    message: `"value" must be [${dnow.toISOString()}]`,
+                    message: `"value" must be one of [${dnow.toISOString()}]`,
                     path: [],
                     type: 'any.only',
                     context: { value: new Date(now * 2), valids: [dnow], label: 'value' }
@@ -164,88 +153,6 @@ describe('cast', () => {
 
             const compiled = Joi.compile(schema);
             expect(Joi.isSchema(compiled)).to.be.true();
-        });
-
-        it('errors on legacy schema', () => {
-
-            const schema = Legacy.number();
-            expect(() => Joi.compile(schema)).to.throw(`Cannot mix different versions of joi schemas: ${require('@hapi/joi-legacy-test/package.json').version} ${require('../package.json').version}`);
-            expect(() => Joi.compile(schema, { legacy: true })).to.not.throw();
-        });
-
-        it('errors on legacy keys', () => {
-
-            const schema = {
-                a: Legacy.number()
-            };
-
-            expect(() => Joi.compile(schema)).to.throw('Cannot mix different versions of joi schemas (a)');
-        });
-
-        describe('legacy', () => {
-
-            it('compiles object with plain keys', () => {
-
-                const schema = {
-                    a: 1,
-                    b: [2, 3]
-                };
-
-                expect(Joi.isSchema(schema)).to.be.false();
-
-                const compiled = Joi.compile(schema, { legacy: true });
-                expect(Joi.isSchema(compiled)).to.be.true();
-            });
-
-            it('compiles object with schema keys (v16)', () => {
-
-                const schema = {
-                    a: Joi.number()
-                };
-
-                expect(Joi.isSchema(schema)).to.be.false();
-
-                const compiled = Joi.compile(schema, { legacy: true });
-                expect(Joi.isSchema(compiled)).to.be.true();
-            });
-
-            it('compiles object with schema array items (v16)', () => {
-
-                const schema = {
-                    a: [Joi.number()]
-                };
-
-                expect(Joi.isSchema(schema)).to.be.false();
-
-                const compiled = Joi.compile(schema, { legacy: true });
-                expect(Joi.isSchema(compiled)).to.be.true();
-            });
-
-            it('compiles object with schema keys (v15)', () => {
-
-                const schema = {
-                    a: Legacy.number()
-                };
-
-                expect(Joi.isSchema(schema)).to.be.false();
-
-                const compiled = Joi.compile(schema, { legacy: true });
-                expect(Joi.isSchema(compiled, { legacy: true })).to.be.true();
-                expect(() => Joi.isSchema(compiled)).to.throw('Cannot mix different versions of joi schemas');
-            });
-
-            it('compiles object with schema keys (v15)', () => {
-
-                const schema = {
-                    a: [Legacy.number()]
-                };
-
-                expect(Joi.isSchema(schema)).to.be.false();
-
-                const compiled = Joi.compile(schema, { legacy: true });
-                expect(Joi.isSchema(compiled, { legacy: true })).to.be.true();
-                expect(() => Joi.isSchema(compiled)).to.throw('Cannot mix different versions of joi schemas');
-            });
         });
     });
 });

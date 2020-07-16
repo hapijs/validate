@@ -308,7 +308,7 @@ describe('function', () => {
                 context: { value: b, label: 'value', n: 1 }
             }],
             [c, false, {
-                message: '"value" must have at least 1 key',
+                message: '"value" must have at least 1 keys',
                 path: [],
                 type: 'object.min',
                 context: { value: c, label: 'value', limit: 1 }

@@ -189,7 +189,7 @@ describe('link', () => {
 
         Helper.validate(schema, [
             [{ a: { y: 1 }, b: { y: 1 } }, true],
-            [{ a: { y: 1 }, b: { y: 2 } }, false, '"b.y" must be [1]']
+            [{ a: { y: 1 }, b: { y: 2 } }, false, '"b.y" must be one of [1]']
         ]);
     });
 
@@ -209,7 +209,7 @@ describe('link', () => {
 
         Helper.validate(schema, [
             [{ a: { y: 1 }, b: { y: 2 } }, true],
-            [{ a: { y: 1 }, b: { y: 1 } }, false, '"b.y" must be [2]']
+            [{ a: { y: 1 }, b: { y: 1 } }, false, '"b.y" must be one of [2]']
         ]);
     });
 
@@ -387,7 +387,7 @@ describe('link', () => {
             Helper.validate(schema, [
                 [{ x: { a: 3 } }, true],
                 [{ x: { a: 2 } }, false, {
-                    message: '"x.a" must be [3]',
+                    message: '"x.a" must be one of [3]',
                     path: ['x', 'a'],
                     type: 'any.only',
                     context: { label: 'x.a', value: 2, key: 'a', valids: [3] }
@@ -415,7 +415,7 @@ describe('link', () => {
                 [{ w: true, x: { a: 3 } }, true],
                 [{ w: true, x: { a: 4 } }, true],
                 [{ x: { a: 2 } }, false, {
-                    message: '"x.a" must be [3]',
+                    message: '"x.a" must be one of [3]',
                     path: ['x', 'a'],
                     type: 'any.only',
                     context: { label: 'x.a', value: 2, key: 'a', valids: [3] }
@@ -448,32 +448,6 @@ describe('link', () => {
                 [{ type: 'b', y: { type: 'a' } }, true],
                 [{ type: 'b', y: { type: 'a', x: true } }, true]
             ]);
-        });
-    });
-
-    describe('describe()', () => {
-
-        it('describes link', () => {
-
-            const schema = Joi.object({
-                a: Joi.string(),
-                b: Joi.link('a')
-            });
-
-            expect(schema.describe()).to.equal({
-                type: 'object',
-                keys: {
-                    a: {
-                        type: 'string'
-                    },
-                    b: {
-                        type: 'link',
-                        link: {
-                            ref: { path: ['a'] }
-                        }
-                    }
-                }
-            });
         });
     });
 });

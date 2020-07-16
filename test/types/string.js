@@ -1175,48 +1175,6 @@ describe('string', () => {
         });
     });
 
-    describe('describe()', () => {
-
-        it('describes various versions of a guid', () => {
-
-            const schema = Joi.string().guid({ version: ['uuidv1', 'uuidv3', 'uuidv5'] });
-
-            expect(schema.describe()).to.equal({
-                type: 'string',
-                rules: [
-                    {
-                        name: 'guid',
-                        args: {
-                            options: {
-                                version: ['uuidv1', 'uuidv3', 'uuidv5']
-                            }
-                        }
-                    }
-                ]
-            });
-        });
-
-        it('describes invert regex pattern', () => {
-
-            const schema = Joi.string().regex(/[a-z]/, { invert: true });
-
-            expect(schema.describe()).to.equal({
-                type: 'string',
-                rules: [
-                    {
-                        name: 'pattern',
-                        args: {
-                            regex: '/[a-z]/',
-                            options: {
-                                invert: true
-                            }
-                        }
-                    }
-                ]
-            });
-        });
-    });
-
     describe('domain()', () => {
 
         it('validates options', () => {
@@ -5637,7 +5595,7 @@ describe('string', () => {
                 [{ a: 'abc', b: 4, c: 42 }, true],
                 [{ a: 'abc', b: 3, c: 0 }, true],
                 [{ a: 'abc', b: 3, c: 42 }, false, {
-                    message: '"c" must be [0]',
+                    message: '"c" must be one of [0]',
                     path: ['c'],
                     type: 'any.only',
                     context: { value: 42, valids: [0], label: 'c', key: 'c' }
@@ -6830,35 +6788,6 @@ describe('string', () => {
 
             const schema = Joi.string().truncate();
             expect(schema.truncate()).to.shallow.equal(schema);
-        });
-
-        it('switches the truncate flag', () => {
-
-            const schema = Joi.string().truncate();
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'string',
-                flags: { truncate: true }
-            });
-        });
-
-        it('switches the truncate flag with explicit value', () => {
-
-            const schema = Joi.string().truncate(true);
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'string',
-                flags: { truncate: true }
-            });
-        });
-
-        it('switches the truncate flag back', () => {
-
-            const schema = Joi.string().truncate().truncate(false);
-            const desc = schema.describe();
-            expect(desc).to.equal({
-                type: 'string'
-            });
         });
 
         it('does not change anything when used without max', () => {

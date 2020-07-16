@@ -94,8 +94,8 @@ describe('Values', () => {
 
             Helper.validate(schema, [
                 [{ b: '' }, true, { b: '', a: '' }],
-                [{ b: 'x' }, false, '"b" must be [ref:a]'],
-                [{ b: 2 }, false, '"b" must be [ref:a]'],
+                [{ b: 'x' }, false, '"b" must be one of [ref:a]'],
+                [{ b: 2 }, false, '"b" must be one of [ref:a]'],
                 [{ a: 3, b: 3 }, true]
             ]);
         });

@@ -193,26 +193,26 @@ describe('alternatives', () => {
                 Helper.validate(schema, [
                     [{ a: 'x', b: 5 }, true],
                     [{ a: 'x', b: 6 }, false, {
-                        message: '"a" must be [y]',
+                        message: '"a" must be one of [y]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'x', valids: ['y'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'y', b: 5 }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'y', b: 6 }, true],
                     [{ a: 'z', b: 5 }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'z', valids: ['x'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'z', b: 6 }, false, {
-                        message: '"a" must be [y]',
+                        message: '"a" must be one of [y]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'z', valids: ['y'], label: 'a', key: 'a' }
@@ -371,26 +371,26 @@ describe('alternatives', () => {
                 Helper.validate(schema, [
                     [{ a: 'x', '': 5 }, true],
                     [{ a: 'x', '': 6 }, false, {
-                        message: '"a" must be [y]',
+                        message: '"a" must be one of [y]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'x', valids: ['y'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'y', '': 5 }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'y', '': 6 }, true],
                     [{ a: 'z', '': 5 }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'z', valids: ['x'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'z', '': 6 }, false, {
-                        message: '"a" must be [y]',
+                        message: '"a" must be one of [y]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'z', valids: ['y'], label: 'a', key: 'a' }
@@ -410,25 +410,25 @@ describe('alternatives', () => {
                 Helper.validate(schema, [
                     [{ a: 'x', b: 5 }, true],
                     [{ a: 'x', b: 6 }, false, {
-                        message: '"a" must be [z]',
+                        message: '"a" must be one of [z]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'x', valids: ['z'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'y', b: 5 }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'y', b: 6 }, false, {
-                        message: '"a" must be [z]',
+                        message: '"a" must be one of [z]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['z'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'z', b: 5 }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'z', valids: ['x'], label: 'a', key: 'a' }
@@ -448,19 +448,19 @@ describe('alternatives', () => {
 
                 Helper.validate(schema, [
                     [{ a: 'x', b: 5 }, false, {
-                        message: '"a" must be [z]',
+                        message: '"a" must be one of [z]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'x', valids: ['z'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'x', b: 6 }, false, {
-                        message: '"a" must be [y]',
+                        message: '"a" must be one of [y]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'x', valids: ['y'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'y', b: 5 }, false, {
-                        message: '"a" must be [z]',
+                        message: '"a" must be one of [z]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['z'], label: 'a', key: 'a' }
@@ -468,7 +468,7 @@ describe('alternatives', () => {
                     [{ a: 'y', b: 6 }, true],
                     [{ a: 'z', b: 5 }, true],
                     [{ a: 'z', b: 6 }, false, {
-                        message: '"a" must be [y]',
+                        message: '"a" must be one of [y]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'z', valids: ['y'], label: 'a', key: 'a' }
@@ -516,13 +516,13 @@ describe('alternatives', () => {
                     }],
                     [{ a: 'x', b: null }, true],
                     [{ a: 'y', b: null }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'a', key: 'a' }
                     }],
                     [{ a: 1, b: null }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 1, valids: ['x'], label: 'a', key: 'a' }
@@ -553,13 +553,13 @@ describe('alternatives', () => {
                         context: { label: 'a', key: 'a', value: 'x' }
                     }],
                     [{ a: 'y', b: 5, c: 5 }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'y' }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'a', key: 'a' }
@@ -586,13 +586,13 @@ describe('alternatives', () => {
                         context: { label: 'a', key: 'a', value: 'x' }
                     }],
                     [{ a: 'y', b: date, c: date }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'y' }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'a', key: 'a' }
@@ -622,13 +622,13 @@ describe('alternatives', () => {
                     [{ a: 'x', b: date, c: date }, true],
                     [{ a: 'x', b: date, c: now }, true, { a: 'x', b: date, c: new Date(now) }],
                     [{ a: 'y', b: date, c: date }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'a', key: 'a' }
                     }],
                     [{ a: 'y' }, false, {
-                        message: '"a" must be [x]',
+                        message: '"a" must be one of [x]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'y', valids: ['x'], label: 'a', key: 'a' }
@@ -647,14 +647,14 @@ describe('alternatives', () => {
 
                 Helper.validate(schema, [
                     [{ a: 'x', b: 5, c: '1' }, false, {
-                        message: '"a" must be [ref:c]',
+                        message: '"a" must be one of [ref:c]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'x', valids: [ref], label: 'a', key: 'a' }
                     }],
                     [{ a: 1, b: 5, c: '1' }, true, { a: 1, b: 5, c: 1 }],
                     [{ a: '1', b: 5, c: '1' }, false, {
-                        message: '"a" must be [ref:c]',
+                        message: '"a" must be one of [ref:c]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: '1', valids: [ref], label: 'a', key: 'a' }
@@ -673,14 +673,14 @@ describe('alternatives', () => {
 
                 Helper.validate(schema, [
                     [{ a: 'x', b: 5, c: '1' }, false, {
-                        message: '"a" must be [ref:c]',
+                        message: '"a" must be one of [ref:c]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: 'x', valids: [ref], label: 'a', key: 'a' }
                     }],
                     [{ a: 1, b: 5, c: '1' }, true, { a: 1, b: 5, c: 1 }],
                     [{ a: '1', b: 5, c: '1' }, false, {
-                        message: '"a" must be [ref:c]',
+                        message: '"a" must be one of [ref:c]',
                         path: ['a'],
                         type: 'any.only',
                         context: { value: '1', valids: [ref], label: 'a', key: 'a' }
@@ -764,13 +764,13 @@ describe('alternatives', () => {
                     [{ a: 0, b: 0, c: 789 }, true],
                     [{ a: 123, b: 456, c: 456 }, true],
                     [{ a: 0, b: 0, c: 456 }, false, {
-                        message: '"c" must be [789]',
+                        message: '"c" must be one of [789]',
                         path: ['c'],
                         type: 'any.only',
                         context: { value: 456, valids: [789], label: 'c', key: 'c' }
                     }],
                     [{ a: 123, b: 456, c: 789 }, false, {
-                        message: '"c" must be [456]',
+                        message: '"c" must be one of [456]',
                         path: ['c'],
                         type: 'any.only',
                         context: { value: 789, valids: [456], label: 'c', key: 'c' }
@@ -843,274 +843,34 @@ describe('alternatives', () => {
                 Helper.validate(schema, [
                     [{ a: 0, b: 1 }, true],
                     [{ a: 0, b: 2 }, false, {
-                        message: '"b" must be [1]',
+                        message: '"b" must be one of [1]',
                         path: ['b'],
                         type: 'any.only',
                         context: { value: 2, valids: [1], label: 'b', key: 'b' }
                     }],
                     [{ a: 1, b: 2 }, true],
                     [{ a: 1, b: 3 }, false, {
-                        message: '"b" must be [2]',
+                        message: '"b" must be one of [2]',
                         path: ['b'],
                         type: 'any.only',
                         context: { value: 3, valids: [2], label: 'b', key: 'b' }
                     }],
                     [{ a: 2, b: 3 }, true],
                     [{ a: 2, b: 2 }, false, {
-                        message: '"b" must be [3]',
+                        message: '"b" must be one of [3]',
                         path: ['b'],
                         type: 'any.only',
                         context: { value: 2, valids: [3], label: 'b', key: 'b' }
                     }],
                     [{ a: 42, b: 4 }, true],
                     [{ a: 42, b: 128 }, false, {
-                        message: '"b" must be [4]',
+                        message: '"b" must be one of [4]',
                         path: ['b'],
                         type: 'any.only',
                         context: { value: 128, valids: [4], label: 'b', key: 'b' }
                     }]
                 ]);
             });
-        });
-    });
-
-    describe('describe()', () => {
-
-        it('describes when', () => {
-
-            const schema = Joi.object({
-                a: Joi.alternatives()
-                    .conditional('b', { is: 5, then: 'x' })
-                    .conditional('b', { is: 6, otherwise: 'y' })
-                    .try('z'),
-                b: Joi.any()
-            });
-
-            expect(schema.describe()).to.equal({
-                type: 'object',
-                keys: {
-                    b: {
-                        type: 'any'
-                    },
-                    a: {
-                        type: 'alternatives',
-                        matches: [
-                            {
-                                ref: { path: ['b'] },
-                                is: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true,
-                                        presence: 'required'
-                                    },
-                                    allow: [{ override: true }, 5]
-                                },
-                                then: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true
-                                    },
-                                    allow: [{ override: true }, 'x']
-                                }
-                            },
-                            {
-                                ref: { path: ['b'] },
-                                is: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true,
-                                        presence: 'required'
-                                    },
-                                    allow: [{ override: true }, 6]
-                                },
-                                otherwise: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true
-                                    },
-                                    allow: [{ override: true }, 'y']
-                                }
-                            },
-                            {
-                                schema: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true
-                                    },
-                                    allow: [{ override: true }, 'z']
-                                }
-                            }
-                        ]
-                    }
-                }
-            });
-        });
-
-        it('describes when (only then)', () => {
-
-            const schema = Joi.object({
-                a: Joi.alternatives()
-                    .conditional('b', { is: 5, then: 'x' })
-                    .try(Joi.valid('z')),
-                b: Joi.any()
-            });
-
-            expect(schema.describe()).to.equal({
-                type: 'object',
-                keys: {
-                    b: {
-                        type: 'any'
-                    },
-                    a: {
-                        type: 'alternatives',
-                        matches: [
-                            {
-                                ref: { path: ['b'] },
-                                is: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true,
-                                        presence: 'required'
-                                    },
-                                    allow: [{ override: true }, 5]
-                                },
-                                then: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true
-                                    },
-                                    allow: [{ override: true }, 'x']
-                                }
-                            },
-                            {
-                                schema: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true
-                                    },
-                                    allow: ['z']
-                                }
-                            }
-                        ]
-                    }
-                }
-            });
-        });
-
-        it('describes when (only otherwise)', () => {
-
-            const schema = Joi.object({
-                a: Joi.alternatives()
-                    .conditional('b', { is: 5, otherwise: 'y' })
-                    .try('z'),
-                b: Joi.any()
-            });
-
-            expect(schema.describe()).to.equal({
-                type: 'object',
-                keys: {
-                    b: {
-                        type: 'any'
-                    },
-                    a: {
-                        type: 'alternatives',
-                        matches: [
-                            {
-                                ref: { path: ['b'] },
-                                is: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true,
-                                        presence: 'required'
-                                    },
-                                    allow: [{ override: true }, 5]
-                                },
-                                otherwise: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true
-                                    },
-                                    allow: [{ override: true }, 'y']
-                                }
-                            },
-                            {
-                                schema: {
-                                    type: 'any',
-                                    flags: {
-                                        only: true
-                                    },
-                                    allow: [{ override: true }, 'z']
-                                }
-                            }
-                        ]
-                    }
-                }
-            });
-        });
-
-        it('describes when (with schema)', () => {
-
-            const schema = Joi.alternatives()
-                .conditional(Joi.string().label('foo'), {
-                    then: Joi.string().required().min(1),
-                    otherwise: Joi.boolean()
-                });
-
-            const outcome = {
-                type: 'alternatives',
-                matches: [{
-                    is: {
-                        type: 'string',
-                        flags: {
-                            label: 'foo'
-                        }
-                    },
-                    then: {
-                        type: 'string',
-                        flags: { presence: 'required' },
-                        rules: [{ args: { limit: 1 }, name: 'min' }]
-                    },
-                    otherwise: {
-                        type: 'boolean'
-                    }
-                }]
-            };
-
-            expect(schema.describe()).to.equal(outcome);
-        });
-
-        it('describes inherited fields (from any)', () => {
-
-            const schema = Joi.alternatives()
-                .try('a')
-                .description('d')
-                .example('a')
-                .meta('b')
-                .meta('c')
-                .note('f')
-                .tag('g');
-
-            const outcome = {
-                type: 'alternatives',
-                notes: ['f'],
-                tags: ['g'],
-                metas: ['b', 'c'],
-                examples: ['a'],
-                flags: {
-                    description: 'd'
-                },
-                matches: [{
-                    schema: {
-                        type: 'any',
-                        flags: {
-                            only: true
-                        },
-                        allow: [{ override: true }, 'a']
-                    }
-                }]
-            };
-
-            expect(schema.describe()).to.equal(outcome);
         });
     });
 
@@ -1168,214 +928,6 @@ describe('alternatives', () => {
             Helper.validate(schema, [
                 [{ x: [] }, false, 'failed!']
             ]);
-        });
-    });
-
-    describe('label()', () => {
-
-        it('passes the label to the underlying schema', () => {
-
-            const schema = Joi.object().keys({
-                a: Joi.boolean(),
-
-                b: Joi.alternatives().conditional('a', {
-                    is: true,
-                    then: Joi.string().empty('').allow(null),
-                    otherwise: Joi.any()
-                })
-                    .label('Label b'),
-
-                c: Joi.alternatives().conditional('a', {
-                    is: true,
-                    then: Joi.any(),
-                    otherwise: Joi.string().empty('').allow(null)
-                })
-                    .label('Label c'),
-
-                d: Joi.alt()
-                    .try(Joi.string())
-                    .label('Label d')
-            })
-                .or('b', 'c', 'd');
-
-            Helper.validate(schema, [
-                [{ a: true, b: 1 }, false, {
-                    message: '"Label b" must be a string',
-                    path: ['b'],
-                    type: 'string.base',
-                    context: { value: 1, key: 'b', label: 'Label b' }
-                }],
-                [{ a: false, b: 1, d: 1 }, false, {
-                    message: '"Label d" must be a string',
-                    path: ['d'],
-                    type: 'string.base',
-                    context: { value: 1, key: 'd', label: 'Label d' }
-                }],
-                [{ a: false, b: 1, c: 1 }, false, {
-                    message: '"Label c" must be a string',
-                    path: ['c'],
-                    type: 'string.base',
-                    context: { value: 1, key: 'c', label: 'Label c' }
-                }]
-            ]);
-        });
-
-        it('does not modify the original schema', () => {
-
-            const schema = Joi.alternatives().conditional('a', {
-                is: true,
-                then: Joi.string().empty('').allow(null),
-                otherwise: Joi.any()
-            });
-
-            const labeled = schema.label('Label b');
-
-            expect(schema.describe()).to.equal({
-                type: 'alternatives',
-                matches: [{
-                    is: {
-                        type: 'any',
-                        flags: { only: true, presence: 'required' },
-                        allow: [{ override: true }, true]
-                    },
-                    ref: { path: ['a'] },
-                    then: {
-                        type: 'string',
-                        flags: {
-                            empty: {
-                                flags: { only: true },
-                                type: 'any',
-                                allow: ['']
-                            }
-                        },
-                        allow: [null]
-                    },
-                    otherwise: { type: 'any' }
-                }]
-            });
-
-            expect(labeled.describe()).to.equal({
-                flags: {
-                    label: 'Label b'
-                },
-                type: 'alternatives',
-                matches: [{
-                    is: {
-                        type: 'any',
-                        flags: { only: true, presence: 'required' },
-                        allow: [{ override: true }, true]
-                    },
-                    ref: { path: ['a'] },
-                    then: {
-                        type: 'string',
-                        flags: {
-                            label: 'Label b',
-                            empty: {
-                                flags: { only: true },
-                                type: 'any',
-                                allow: ['']
-                            }
-                        },
-                        allow: [null]
-                    },
-                    otherwise: {
-                        type: 'any',
-                        flags: { label: 'Label b' }
-                    }
-                }]
-            });
-        });
-
-        it('applies label to then', () => {
-
-            const schema = Joi.object({
-                a: Joi.boolean(),
-                b: Joi.alternatives()
-                    .conditional('a', { is: true, then: Joi.string() })
-                    .label('x')
-            });
-
-            expect(schema.describe()).to.equal({
-                type: 'object',
-                keys: {
-                    a: {
-                        type: 'boolean'
-                    },
-                    b: {
-                        type: 'alternatives',
-                        flags: {
-                            label: 'x'
-                        },
-                        matches: [
-                            {
-                                is: {
-                                    type: 'any',
-                                    allow: [{ override: true }, true],
-                                    flags: {
-                                        only: true,
-                                        presence: 'required'
-                                    }
-                                },
-                                ref: {
-                                    path: ['a']
-                                },
-                                then: {
-                                    type: 'string',
-                                    flags: {
-                                        label: 'x'
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                }
-            });
-        });
-
-        it('applies label to otherwise', () => {
-
-            const schema = Joi.object({
-                a: Joi.boolean(),
-                b: Joi.alternatives()
-                    .conditional('a', { is: true, otherwise: Joi.string() })
-                    .label('x')
-            });
-
-            expect(schema.describe()).to.equal({
-                type: 'object',
-                keys: {
-                    a: {
-                        type: 'boolean'
-                    },
-                    b: {
-                        type: 'alternatives',
-                        flags: {
-                            label: 'x'
-                        },
-                        matches: [
-                            {
-                                is: {
-                                    type: 'any',
-                                    allow: [{ override: true }, true],
-                                    flags: {
-                                        only: true,
-                                        presence: 'required'
-                                    }
-                                },
-                                ref: {
-                                    path: ['a']
-                                },
-                                otherwise: {
-                                    type: 'string',
-                                    flags: {
-                                        label: 'x'
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                }
-            });
         });
     });
 
@@ -1461,74 +1013,6 @@ describe('alternatives', () => {
 
             expect(() => Joi.alternatives().match('any').conditional('$a', { is: true, then: false })).to.not.throw();
             expect(() => Joi.alternatives().conditional('$a', { is: true, then: false }).match('any')).to.not.throw();
-        });
-    });
-
-    describe('tailor()', () => {
-
-        it('customizes schema', () => {
-
-            const alternatives = {
-                v: (s) => s.min(10)
-            };
-
-            const before = Joi.object({
-                x: Joi.alternatives([
-                    Joi.number().alter(alternatives),
-                    Joi.string().alter(alternatives)
-                ])
-            });
-
-            const bd = before.describe();
-
-            const first = before.tailor('v');
-
-            const after = Joi.object({
-                x: Joi.alternatives([
-                    Joi.number().min(10).alter(alternatives),
-                    Joi.string().min(10).alter(alternatives)
-                ])
-            });
-
-            Helper.equal(first, after);
-            expect(first.describe()).to.equal(after.describe());
-            expect(before.describe()).to.equal(bd);
-        });
-
-        it('customizes schema with outter rule', () => {
-
-            const alt1 = {
-                v: (s) => s.min(10)
-            };
-
-            const alt2 = {
-                v: (s) => s.try(Joi.valid('x'))
-            };
-
-            const before = Joi.object({
-                x: Joi.alternatives([
-                    Joi.number().alter(alt1),
-                    Joi.string().alter(alt1)
-                ])
-                    .alter(alt2)
-            });
-
-            const bd = before.describe();
-
-            const first = before.tailor('v');
-
-            const after = Joi.object({
-                x: Joi.alternatives([
-                    Joi.number().min(10).alter(alt1),
-                    Joi.string().min(10).alter(alt1),
-                    Joi.valid('x')
-                ])
-                    .alter(alt2)
-            });
-
-            Helper.equal(first, after);
-            expect(first.describe()).to.equal(after.describe());
-            expect(before.describe()).to.equal(bd);
         });
     });
 

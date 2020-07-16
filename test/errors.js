@@ -150,9 +150,7 @@ describe('errors', () => {
                 type: 'object.without',
                 context: {
                     main: 'required',
-                    mainWithLabel: 'required',
                     peer: 'xor',
-                    peerWithLabel: 'xor',
                     label: 'value',
                     value
                 }
@@ -163,36 +161,12 @@ describe('errors', () => {
                 type: 'object.without',
                 context: {
                     main: 'xor',
-                    mainWithLabel: 'xor',
                     peer: 'required',
-                    peerWithLabel: 'required',
                     label: 'value',
                     value
                 }
             }
         ]);
-    });
-
-    it('supports language preference', () => {
-
-        const schema = Joi.number().min(10);
-
-        const messages = {
-            english: {
-                root: 'value',
-                'number.min': '{#label} too small'
-            },
-            latin: {
-                root: 'valorem',
-                'number.min': Joi.x('{@label} angustus', { prefix: { local: '@' } })
-            },
-            empty: {}
-        };
-
-        expect(schema.validate(1, { messages, errors: { language: 'english' } }).error).to.be.an.error('"value" too small');
-        expect(schema.validate(1, { messages, errors: { language: 'latin' } }).error).to.be.an.error('"valorem" angustus');
-        expect(schema.validate(1, { messages, errors: { language: 'unknown' } }).error).to.be.an.error('"value" must be greater than or equal to 10');
-        expect(schema.validate(1, { messages, errors: { language: 'empty' } }).error).to.be.an.error('"value" must be greater than or equal to 10');
     });
 
     it('supports language preference (fallthrough)', () => {
@@ -210,101 +184,6 @@ describe('errors', () => {
 
         expect(schema.validate(1, { errors: { language: 'english' } }).error).to.be.an.error('"value" too small');
         expect(schema.validate(1, { errors: { language: 'latin' } }).error).to.be.an.error('"valorem" angustus');
-
-        expect(schema.describe().preferences.messages).to.equal(messages);
-    });
-
-    it('supports language preference combination', () => {
-
-        const code = {
-            english: {
-                'number.min': '{#label} too small'
-            },
-            latin: {
-                'number.min': Joi.x('{@label} angustus', { prefix: { local: '@' } })
-            },
-            empty: {}
-        };
-
-        const root = {
-            english: {
-                root: 'value'
-            },
-            latin: {
-                root: 'valorem'
-            }
-        };
-
-        const schema = Joi.number().min(10).prefs({ messages: code }).prefs({ messages: root });
-
-        expect(schema.validate(1, { errors: { language: 'english' } }).error).to.be.an.error('"value" too small');
-        expect(schema.validate(1, { errors: { language: 'latin' } }).error).to.be.an.error('"valorem" angustus');
-        expect(schema.validate(1, { errors: { language: 'unknown' } }).error).to.be.an.error('"value" must be greater than or equal to 10');
-        expect(schema.validate(1, { errors: { language: 'empty' } }).error).to.be.an.error('"value" must be greater than or equal to 10');
-    });
-
-    it('supports language ref preference', () => {
-
-        const messages = {
-            english: {
-                'number.min': '{#label} too small'
-            },
-            latin: {
-                'number.min': Joi.x('{@label} angustus', { prefix: { local: '@' } })
-            },
-            empty: {}
-        };
-
-        const schema = Joi.object({
-            a: Joi.number().min(10),
-            lang: Joi.string().required()
-        })
-            .prefs({
-                messages,
-                errors: {
-                    language: Joi.ref('/lang'),
-                    wrap: {
-                        label: false
-                    }
-                }
-            });
-
-        expect(schema.validate({ a: 1, lang: 'english' }).error).to.be.an.error('a too small');
-        expect(schema.validate({ a: 1, lang: 'latin' }).error).to.be.an.error('a angustus');
-        expect(schema.validate({ a: 1, lang: 'unknown' }).error).to.be.an.error('a must be greater than or equal to 10');
-        expect(schema.validate({ a: 1, lang: 'empty' }).error).to.be.an.error('a must be greater than or equal to 10');
-    });
-
-    it('supports custom wrap characters', () => {
-
-        const messages = {
-            english: {
-                'number.min': '{#label} too small'
-            },
-            latin: {
-                'number.min': Joi.x('{@label} angustus', { prefix: { local: '@' } })
-            },
-            empty: {}
-        };
-
-        const schema = Joi.object({
-            a: Joi.number().min(10),
-            lang: Joi.string().required()
-        })
-            .prefs({
-                messages,
-                errors: {
-                    language: Joi.ref('/lang'),
-                    wrap: {
-                        label: '{}'
-                    }
-                }
-            });
-
-        expect(schema.validate({ a: 1, lang: 'english' }).error).to.be.an.error('{a} too small');
-        expect(schema.validate({ a: 1, lang: 'latin' }).error).to.be.an.error('{a} angustus');
-        expect(schema.validate({ a: 1, lang: 'unknown' }).error).to.be.an.error('{a} must be greater than or equal to 10');
-        expect(schema.validate({ a: 1, lang: 'empty' }).error).to.be.an.error('{a} must be greater than or equal to 10');
     });
 
     it('supports render preference', () => {
@@ -506,14 +385,14 @@ describe('errors', () => {
 
     it('allows html escaping', () => {
 
-        const schema = Joi.string().prefs({ messages: { root: 'blah' } }).label('bleh');
+        const schema = Joi.string().prefs({ messages: { root: 'blah' } });
         const err = schema.validate(4).error;
-        expect(err).to.be.an.error('"bleh" must be a string');
+        expect(err).to.be.an.error('"blah" must be a string');
         expect(err.details).to.equal([{
-            message: '"bleh" must be a string',
+            message: '"blah" must be a string',
             path: [],
             type: 'string.base',
-            context: { value: 4, label: 'bleh' }
+            context: { value: 4, label: 'blah' }
         }]);
     });
 
@@ -576,9 +455,9 @@ describe('errors', () => {
             })
         });
 
-        expect(schema.validate({ x: { y: { z: 'o' } } }).error).to.be.an.error('"x.y.z" must be [z]');
-        expect(schema.validate({ x: { y: { z: 'o' } } }, { errors: { label: false } }).error).to.be.an.error('must be [z]');
-        expect(schema.validate({ x: { y: { z: 'o' } } }, { errors: { label: 'key' } }).error).to.be.an.error('"z" must be [z]');
+        expect(schema.validate({ x: { y: { z: 'o' } } }).error).to.be.an.error('"x.y.z" must be one of [z]');
+        expect(schema.validate({ x: { y: { z: 'o' } } }, { errors: { label: false } }).error).to.be.an.error('must be one of [z]');
+        expect(schema.validate({ x: { y: { z: 'o' } } }, { errors: { label: 'key' } }).error).to.be.an.error('"z" must be one of [z]');
         expect(schema.validate(1, { errors: { label: 'key' } }).error).to.be.an.error('"value" must be of type object');
         expect(schema.validate({ x: { y: { a: [1] } } }, { errors: { label: 'key' } }).error).to.be.an.error('"[0]" must be a string');
     });
@@ -986,9 +865,9 @@ describe('errors', () => {
             });
 
             const err = schema.validate(object, { abortEarly: false }).error;
-            expect(err).to.be.an.error('"response" is invalid because "options.stripUnknown" failed to meet requirement of having peer modify set to true');
+            expect(err).to.be.an.error('"response" is invalid because it failed to pass the assertion test');
             expect(err.details).to.equal([{
-                message: '"response" is invalid because "options.stripUnknown" failed to meet requirement of having peer modify set to true',
+                message: '"response" is invalid because it failed to pass the assertion test',
                 path: ['response'],
                 type: 'object.assert',
                 context: {
@@ -1012,8 +891,8 @@ describe('errors', () => {
 
             const value = Joi.number().min(1);
             const err = schema.validate(value).error;
-            expect(err.message).equal('"type" must be [string]');
-            expect(err.annotate()).to.contain('"type" must be [string]');
+            expect(err.message).equal('"type" must be one of [string]');
+            expect(err.annotate()).to.contain('"type" must be one of [string]');
             Helper.equal(value, Joi.number().min(1));
         });
     });

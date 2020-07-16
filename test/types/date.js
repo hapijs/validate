@@ -178,34 +178,6 @@ describe('date', () => {
 
     describe('format()', () => {
 
-        it('ignores unknown formats', () => {
-
-            const custom = Joi.extend({
-                type: 'date',
-                base: Joi.date(),
-                overrides: {
-                    format(format) {
-
-                        if (['iso', 'javascript', 'unix'].includes(format)) {
-                            return this.$_parent('format', format);
-                        }
-
-                        return this.$_setFlag('format', format);
-                    }
-                }
-            });
-
-            const now = Date.now();
-            Helper.validate(custom.date().format('unknown'), [
-                ['x', false, '"value" must be in unknown format'],
-                [now, true, new Date(now)]
-            ]);
-
-            Helper.validate(custom.date().format(['unknown']), [
-                ['x', false, '"value" must be in [unknown] format']
-            ]);
-        });
-
         it('enforces format when value is a string', () => {
 
             const schema = Joi.date().$_setFlag('format', 'MM-DD-YY');
@@ -321,7 +293,7 @@ describe('date', () => {
                 [{ a: 456, b: 123, c: 0 }, true, { a: new Date(456), b: new Date(123), c: 0 }],
                 [{ a: 123, b: 123, c: 42 }, true, { a: new Date(123), b: new Date(123), c: 42 }],
                 [{ a: 456, b: 123, c: 42 }, false, {
-                    message: '"c" must be [0]',
+                    message: '"c" must be one of [0]',
                     path: ['c'],
                     type: 'any.only',
                     context: { value: 42, valids: [0], label: 'c', key: 'c' }
@@ -415,33 +387,33 @@ describe('date', () => {
                 ['+002013-06-07T14:21:46.295Z', true, new Date('+002013-06-07T14:21:46.295Z')],
                 ['-002013-06-07T14:21:46.295Z', true, new Date('-002013-06-07T14:21:46.295Z')],
                 ['002013-06-07T14:21:46.295Z', false, {
-                    message: '"value" must be in ISO 8601 date format',
+                    message: '"value" must be in iso format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '002013-06-07T14:21:46.295Z', format: 'iso' }
                 }],
                 ['+2013-06-07T14:21:46.295Z', false, {
-                    message: '"value" must be in ISO 8601 date format',
+                    message: '"value" must be in iso format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '+2013-06-07T14:21:46.295Z', format: 'iso' }
                 }],
                 ['-2013-06-07T14:21:46.295Z', false, {
-                    message: '"value" must be in ISO 8601 date format',
+                    message: '"value" must be in iso format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '-2013-06-07T14:21:46.295Z', format: 'iso' }
                 }],
                 ['2013-06-07T14:21:46.295Z', true, new Date('2013-06-07T14:21:46.295Z')],
                 ['2013-06-07T14:21:46.295Z0', false, {
-                    message: '"value" must be in ISO 8601 date format',
+                    message: '"value" must be in iso format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '2013-06-07T14:21:46.295Z0', format: 'iso' }
                 }],
                 ['2013-06-07T14:21:46.295+07:00', true, new Date('2013-06-07T14:21:46.295+07:00')],
                 ['2013-06-07T14:21:46.295+07:000', false, {
-                    message: '"value" must be in ISO 8601 date format',
+                    message: '"value" must be in iso format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '2013-06-07T14:21:46.295+07:000', format: 'iso' }
@@ -449,7 +421,7 @@ describe('date', () => {
                 ['2013-06-07T14:21:46.295-07:00', true, new Date('2013-06-07T14:21:46.295-07:00')],
                 ['2013-06-07T14:21:46Z', true, new Date('2013-06-07T14:21:46Z')],
                 ['2013-06-07T14:21:46Z0', false, {
-                    message: '"value" must be in ISO 8601 date format',
+                    message: '"value" must be in iso format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '2013-06-07T14:21:46Z0', format: 'iso' }
@@ -459,28 +431,28 @@ describe('date', () => {
                 ['2013-06-07T14:21Z', true, new Date('2013-06-07T14:21Z')],
                 ['2013-06-07T14:21+07:00', true, new Date('2013-06-07T14:21+07:00')],
                 ['2013-06-07T14:21+07:000', false, {
-                    message: '"value" must be in ISO 8601 date format',
+                    message: '"value" must be in iso format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '2013-06-07T14:21+07:000', format: 'iso' }
                 }],
                 ['2013-06-07T14:21-07:00', true, new Date('2013-06-07T14:21-07:00')],
                 ['2013-06-07T14:21Z+7:00', false, {
-                    message: '"value" must be in ISO 8601 date format',
+                    message: '"value" must be in iso format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '2013-06-07T14:21Z+7:00', format: 'iso' }
                 }],
                 ['2013-06-07', true, new Date('2013-06-07')],
                 ['2013-06-07T', false, {
-                    message: '"value" must be in ISO 8601 date format',
+                    message: '"value" must be in iso format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '2013-06-07T', format: 'iso' }
                 }],
                 ['2013-06-07T14:21', true, new Date('2013-06-07T14:21')],
                 ['1-1-2013', false, {
-                    message: '"value" must be in ISO 8601 date format',
+                    message: '"value" must be in iso format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '1-1-2013', format: 'iso' }
@@ -500,7 +472,7 @@ describe('date', () => {
             const schema = { item: Joi.date().iso() };
             Helper.validate(Joi.compile(schema), [
                 [{ item: 'something' }, false, {
-                    message: '"item" must be in ISO 8601 date format',
+                    message: '"item" must be in iso format',
                     path: ['item'],
                     type: 'date.format',
                     context: { label: 'item', key: 'item', value: 'something', format: 'iso' }
@@ -767,28 +739,6 @@ describe('date', () => {
             ]);
         });
 
-        it('supports template operations', () => {
-
-            const ref = Joi.x('{number(from) + 364 * day}');
-            const schema = Joi.object({
-                annual: Joi.boolean().required(),
-                from: Joi.date().required(),
-                to: Joi.date().required()
-                    .when('annual', { is: true, then: Joi.date().max(ref) })
-            });
-
-            Helper.validate(schema, [
-                [{ annual: false, from: '2000-01-01', to: '2010-01-01' }, true, { annual: false, from: new Date('2000-01-01'), to: new Date('2010-01-01') }],
-                [{ annual: true, from: '2000-01-01', to: '2000-12-30' }, true, { annual: true, from: new Date('2000-01-01'), to: new Date('2000-12-30') }],
-                [{ annual: true, from: '2000-01-01', to: '2010-01-01' }, false, {
-                    message: '"to" must be less than or equal to "{number(from) + 364 * day}"',
-                    path: ['to'],
-                    type: 'date.max',
-                    context: { limit: ref, label: 'to', key: 'to', value: new Date('2010-01-01') }
-                }]
-            ]);
-        });
-
         it('errors if reference is not a date', () => {
 
             const ref = Joi.ref('a');
@@ -932,13 +882,13 @@ describe('date', () => {
                 [{ a: 123, b: 456, c: 42 }, true, { a: new Date(123), b: new Date(456), c: 42 }],
                 [{ a: 456, b: 123, c: 0 }, true, { a: new Date(456), b: new Date(123), c: 0 }],
                 [{ a: 123, b: 123, c: 42 }, false, {
-                    message: '"c" must be [0]',
+                    message: '"c" must be one of [0]',
                     path: ['c'],
                     type: 'any.only',
                     context: { value: 42, valids: [0], label: 'c', key: 'c' }
                 }],
                 [{ a: 456, b: 123, c: 42 }, false, {
-                    message: '"c" must be [0]',
+                    message: '"c" must be one of [0]',
                     path: ['c'],
                     type: 'any.only',
                     context: { value: 42, valids: [0], label: 'c', key: 'c' }
@@ -1026,13 +976,13 @@ describe('date', () => {
             const schema = Joi.date().timestamp();
             Helper.validate(schema, [
                 ['', false, {
-                    message: '"value" must be in timestamp or number of milliseconds format',
+                    message: '"value" must be in javascript format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '', format: 'javascript' }
                 }],
                 [' \t ', false, {
-                    message: '"value" must be in timestamp or number of milliseconds format',
+                    message: '"value" must be in javascript format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: ' \t ', format: 'javascript' }
@@ -1090,25 +1040,25 @@ describe('date', () => {
                 [1E3, true, new Date(1000)],
                 ['1E3', true, new Date(1000)],
                 [',', false, {
-                    message: '"value" must be in timestamp or number of milliseconds format',
+                    message: '"value" must be in javascript format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: ',', format: 'javascript' }
                 }],
                 ['123A,0xA', false, {
-                    message: '"value" must be in timestamp or number of milliseconds format',
+                    message: '"value" must be in javascript format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '123A,0xA', format: 'javascript' }
                 }],
                 ['1-1-2013 UTC', false, {
-                    message: '"value" must be in timestamp or number of milliseconds format',
+                    message: '"value" must be in javascript format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: '1-1-2013 UTC', format: 'javascript' }
                 }],
                 ['not a valid timestamp', false, {
-                    message: '"value" must be in timestamp or number of milliseconds format',
+                    message: '"value" must be in javascript format',
                     path: [],
                     type: 'date.format',
                     context: { label: 'value', value: 'not a valid timestamp', format: 'javascript' }

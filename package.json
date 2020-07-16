@@ -1,34 +1,24 @@
 {
-  "name": "@hapi/joi",
+  "name": "@hapi/validate",
   "description": "Object schema validation",
-  "version": "17.1.1",
-  "repository": "git://github.com/hapijs/joi",
+  "version": "0.0.0",
+  "repository": "git://github.com/hapijs/validate",
   "main": "lib/index.js",
-  "browser": "dist/joi-browser.min.js",
   "files": [
-    "lib/**/*",
-    "dist/*"
-  ],
-  "keywords": [
-    "schema",
-    "validation"
+    "lib/**/*"
   ],
   "dependencies": {
     "@hapi/address": "^4.1.0",
-    "@hapi/formula": "^2.0.0",
     "@hapi/hoek": "^9.0.0",
-    "@hapi/pinpoint": "^2.0.0",
     "@hapi/topo": "^5.0.0"
   },
   "devDependencies": {
     "@hapi/bourne": "2.x.x",
     "@hapi/code": "8.x.x",
-    "@hapi/lab": "22.x.x",
-    "@hapi/joi-legacy-test": "npm:@hapi/joi@15.x.x"
+    "@hapi/lab": "22.x.x"
   },
   "scripts": {
-    "prepublishOnly": "cd browser && npm install && npm run build",
-    "test": "lab -t 100 -a @hapi/code -L",
+    "test": "lab -t 97 -a @hapi/code -L",
     "test-cov-html": "lab -r html -o coverage.html -a @hapi/code"
   },
   "license": "BSD-3-Clause"
