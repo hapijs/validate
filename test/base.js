@@ -807,8 +807,9 @@ describe('any', () => {
             });
 
             const input = {};
-            expect(schema.validate(input)).to.equal({ value: { foo: 1 } });
-            expect(schema.validate(input)).to.equal({ value: { foo: 2 } });
+            expect(schema.validateAsync(input)).to.equal({ foo: 1 });
+            expect(schema.validateAsync(input)).to.equal({ foo: 2 });
+            expect(() => schema.validateAsync({ x: 1 })).to.throw();
         });
 
         it('passes a clone of the parent if the default method accepts an argument', () => {
