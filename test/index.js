@@ -363,7 +363,6 @@ describe('Joi', () => {
         Helper.validate(Joi.object(), [[{ auth: { mode: 'try' } }, true]]);
         Helper.validate(Joi.object(), [[true, false, '"value" must be of type object']]);
         Helper.validate(Joi.string(), [[true, false, '"value" must be a string']]);
-        Helper.validate(Joi.string().email(), [['test@test.com', true]]);
         Helper.validate(Joi.object({ param: Joi.string().required() }), [[{ param: 'item' }, true]]);
     });
 
@@ -482,14 +481,12 @@ describe('Joi', () => {
 
         const schema = {
             a: Joi.number().min(0).max(3),
-            b: Joi.string().valid('a', 'b', 'c'),
-            c: Joi.string().email().optional()
+            b: Joi.string().valid('a', 'b', 'c')
         };
 
         const obj = {
             a: 10,
-            b: 'a',
-            c: 'joe@example.com'
+            b: 'a'
         };
 
         Helper.validate(Joi.compile(schema), [[obj, false, '"a" must be less than or equal to 3']]);
@@ -499,14 +496,12 @@ describe('Joi', () => {
 
         const schema = {
             a: Joi.number().min(0).max(3),
-            b: Joi.string().valid('a', 'b', 'c'),
-            c: Joi.string().email().optional()
+            b: Joi.string().valid('a', 'b', 'c')
         };
 
         const obj = {
             a: 'a',
-            b: 'a',
-            c: 'joe@example.com'
+            b: 'a'
         };
 
         Helper.validate(Joi.compile(schema), [[obj, false, '"a" must be a number']]);
@@ -605,8 +600,7 @@ describe('Joi', () => {
 
         const schema = Joi.object({
             a: Joi.number().min(0).max(3),
-            b: Joi.string().valid('a', 'b', 'c'),
-            c: Joi.string().email().optional()
+            b: Joi.string().valid('a', 'b', 'c')
         });
 
         const obj = {
@@ -622,8 +616,7 @@ describe('Joi', () => {
 
         const schema = Joi.object({
             a: Joi.number().min(0).max(3),
-            b: Joi.string().valid('a', 'b', 'c'),
-            c: Joi.string().email().optional()
+            b: Joi.string().valid('a', 'b', 'c')
         });
 
         const obj = {
@@ -690,8 +683,7 @@ describe('Joi', () => {
 
         const schema = Joi.object({
             a: Joi.number().min(0).max(3),
-            b: Joi.string().valid('a', 'b', 'c'),
-            c: Joi.string().email().optional()
+            b: Joi.string().valid('a', 'b', 'c')
         });
 
         const obj = {
@@ -707,8 +699,7 @@ describe('Joi', () => {
 
         const schema = Joi.object({
             a: Joi.number().min(0).max(3),
-            b: Joi.string().valid('a', 'b', 'c'),
-            c: Joi.string().email().optional()
+            b: Joi.string().valid('a', 'b', 'c')
         });
 
         const obj = {
@@ -724,8 +715,7 @@ describe('Joi', () => {
 
         const schema = Joi.object({
             a: Joi.number().min(0).max(3),
-            b: Joi.string().valid('a', 'b', 'c'),
-            c: Joi.string().email().optional()
+            b: Joi.string().valid('a', 'b', 'c')
         });
 
         const obj = {

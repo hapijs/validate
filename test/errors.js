@@ -44,7 +44,6 @@ describe('errors', () => {
     it('supports custom errors when validating types', () => {
 
         const schema = Joi.object({
-            email: Joi.string().email(),
             date: Joi.date(),
             alphanum: Joi.string().alphanum(),
             min: Joi.string().min(3),
@@ -59,7 +58,6 @@ describe('errors', () => {
             .without('xor', 'required');
 
         const value = {
-            email: 'invalid-email',
             date: 'invalid-date',
             alphanum: '\b\n\f\r\t',
             min: 'ab',
@@ -77,7 +75,6 @@ describe('errors', () => {
             'string.min': '{#label} 14',
             'string.max': '{#label} 15',
             'string.alphanum': '{#label} 16',
-            'string.email': '{#label} 19',
             'object.without': '{#label} 7',
             'object.rename.override': '{#label} 11'
         };
@@ -87,7 +84,7 @@ describe('errors', () => {
         value.required = value.renamed;
         delete value.renamed;
 
-        expect(error).to.be.an.error('"value" 11. "email" 19. "date" 18. "alphanum" 16. "min" 14. "max" 15. "notEmpty" 3. "value" 7');
+        expect(error).to.be.an.error('"value" 11. "date" 18. "alphanum" 16. "min" 14. "max" 15. "notEmpty" 3. "value" 7');
         expect(error.name).to.equal('ValidationError');
         expect(error.details).to.equal([
             {
@@ -95,12 +92,6 @@ describe('errors', () => {
                 path: [],
                 type: 'object.rename.override',
                 context: { from: 'renamed', to: 'required', label: 'value', pattern: false, value }
-            },
-            {
-                message: '"email" 19',
-                path: ['email'],
-                type: 'string.email',
-                context: { value: 'invalid-email', invalids: ['invalid-email'], label: 'email', key: 'email' }
             },
             {
                 message: '"date" 18',

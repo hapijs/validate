@@ -35,8 +35,7 @@ describe('object', () => {
 
         const schema = Joi.object({
             a: Joi.number().min(0).max(3),
-            b: Joi.string().valid('a', 'b', 'c'),
-            c: Joi.string().email().optional()
+            b: Joi.string().valid('a', 'b', 'c')
         }).without('a', 'none');
 
         expect(Joi.isSchema(schema)).to.be.true();
@@ -44,8 +43,7 @@ describe('object', () => {
 
         const obj = {
             a: 1,
-            b: 'a',
-            c: 'joe@example.com'
+            b: 'a'
         };
 
         Helper.validate(schema, [[obj, true]]);
@@ -2956,8 +2954,8 @@ describe('object', () => {
         it('handles period in key names', () => {
 
             const schema = Joi.object({
-                'x.from': Joi.string().lowercase().email(),
-                'x.url': Joi.string().uri({ scheme: ['https'] })
+                'x.from': Joi.string().lowercase(),
+                'x.url': Joi.string()
             })
                 .with('x.from', 'x.url', { separator: false });
 
@@ -3361,8 +3359,8 @@ describe('object', () => {
         it('handles period in key names', () => {
 
             const schema = Joi.object({
-                'x.from': Joi.string().lowercase().email(),
-                'x.url': Joi.string().uri({ scheme: ['https'] })
+                'x.from': Joi.string().lowercase(),
+                'x.url': Joi.string()
             })
                 .xor('x.from', 'x.url', { separator: false });
 

@@ -8,7 +8,6 @@
     "lib/**/*"
   ],
   "dependencies": {
-    "@hapi/address": "^4.1.0",
     "@hapi/hoek": "^9.0.0",
     "@hapi/topo": "^5.0.0"
   },
