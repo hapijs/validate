@@ -1,7 +1,7 @@
 {
   "name": "@hapi/validate",
   "description": "Object schema validation",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "repository": "git://github.com/hapijs/validate",
   "main": "lib/index.js",
   "files": [
