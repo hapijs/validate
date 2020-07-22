@@ -180,6 +180,30 @@ describe('alternatives', () => {
             ]);
         });
 
+        it('respects optional presence', () => {
+
+            const schema = Joi.object().keys({
+                a: Joi.boolean(),
+                b: Joi.alternatives().conditional('a', {
+                    is: true,
+                    then: Joi.object(),
+                    otherwise: Joi.string().empty('').allow(null)
+                })
+            });
+
+            Helper.validate(schema, [
+                [{ a: true }, true],
+                [{ a: false }, true],
+                [{ a: true, b: {} }, true],
+                [{ a: false, b: 1 }, false, {
+                    message: '"b" must be a string',
+                    path: ['b'],
+                    type: 'string.base',
+                    context: { value: 1, key: 'b', label: 'b' }
+                }]
+            ]);
+        });
+
         describe('with ref', () => {
 
             it('validates conditional alternatives', () => {
