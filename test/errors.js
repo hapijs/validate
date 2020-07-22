@@ -2,6 +2,7 @@
 
 const Code = require('@hapi/code');
 const Joi = require('..');
+const Extend = require('../lib/extend');
 const Lab = require('@hapi/lab');
 
 const Helper = require('./helper');
@@ -508,6 +509,36 @@ describe('errors', () => {
             ]);
 
             expect(err.annotate()).to.equal('{\n  "y": {\n    "b" \u001b[31m[3, 4]\u001b[0m: {\n      "c": 10\n    },\n    \u001b[41m"u"\u001b[0m\u001b[31m [2]: -- missing --\u001b[0m\n  },\n  "a" \u001b[31m[1]\u001b[0m: "m"\n}\n\u001b[31m\n[1] "a" must be one of [a, b, c, d]\n[2] "y.u" is required\n[3] "y.b" must be one of [i, j, false]\n[4] "y.b" must be a string\u001b[0m');
+        });
+
+        it('annotates error for non-terminal string', () => {
+
+            const object = { a: '{"b":{"c":{"d":1}}}' };
+
+            const schema = Joi.object({
+                a: Extend.type(Joi.object({
+                    b: Joi.object({
+                        c: { d: Joi.string() }
+                    })
+                }), {
+                    type: 'object',
+                    coerce: {
+                        from: 'string',
+                        method: (value) => ({ value: JSON.parse(value) })
+                    }
+                })
+            });
+
+            const err = schema.validate(object, { abortEarly: false }).error;
+            expect(err).to.be.an.error('"a.b.c.d" must be a string');
+            expect(err.details).to.equal([{
+                message: '"a.b.c.d" must be a string',
+                path: ['a', 'b', 'c', 'd'],
+                type: 'string.base',
+                context: { value: 1, label: 'a.b.c.d', key: 'd' }
+            }]);
+
+            expect(err.annotate()).to.equal('{\n  "a" \u001b[31m[1]\u001b[0m: "{\\"b\\":{\\"c\\":{\\"d\\":1}}}"\n}\n\u001b[31m\n[1] "a.b.c.d" must be a string\u001b[0m');
         });
 
         it('annotates error without colors if requested', () => {

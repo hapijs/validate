@@ -703,6 +703,52 @@ describe('any', () => {
             ]);
         });
 
+        it('merges two objects (multi)', () => {
+
+            const a = Joi.number().multiple(2);
+            const b = Joi.number().multiple(5);
+
+            const ab = a.concat(b);
+
+            Helper.validate(a, [
+                [2, true],
+                [5, false,  {
+                    message: '"value" must be a multiple of 2',
+                    path: [],
+                    type: 'number.multiple',
+                    context: { value: 5, multiple: 2, label: 'value' }
+                }],
+                [10, true]
+            ]);
+
+            Helper.validate(b, [
+                [2, false,  {
+                    message: '"value" must be a multiple of 5',
+                    path: [],
+                    type: 'number.multiple',
+                    context: { value: 2, multiple: 5, label: 'value' }
+                }],
+                [5, true],
+                [10, true]
+            ]);
+
+            Helper.validate(ab, [
+                [2, false,  {
+                    message: '"value" must be a multiple of 5',
+                    path: [],
+                    type: 'number.multiple',
+                    context: { value: 2, multiple: 5, label: 'value' }
+                }],
+                [5, false, {
+                    message: '"value" must be a multiple of 2',
+                    path: [],
+                    type: 'number.multiple',
+                    context: { value: 5, multiple: 2, label: 'value' }
+                }],
+                [10, true]
+            ]);
+        });
+
         it('throws when schema key types do not match', () => {
 
             const a = Joi.object({ a: Joi.number() });
