@@ -2,6 +2,7 @@
 
 const Code = require('@hapi/code');
 const Joi = require('..');
+const Template = require('../lib/template');
 const Lab = require('@hapi/lab');
 
 const Helper = require('./helper');
@@ -3108,6 +3109,131 @@ describe('any', () => {
             expect(() => Joi.any().$_addRule('')).to.throw('Invalid rule name');
             expect(() => Joi.any().$_addRule({ name: '' })).to.throw('Invalid rule name');
             expect(() => Joi.any().$_addRule({ name: 5 })).to.throw('Invalid rule name');
+        });
+    });
+
+    describe('_extend', () => {
+
+        it('uses custom messages', () => {
+
+            const messages = new Template('custom message');
+            const NewType = Joi.forbidden()._extend({ messages });
+            const { error } = NewType.validate(true);
+            expect(error.details[0].message).to.equal('custom message');
+        });
+
+        it('uses custom root type messages', () => {
+
+            const messages = { root: 'base string message' };
+            const NewType = Joi.forbidden()._extend({ messages });
+            const { error } = NewType.validate('anything else');
+            expect(error.details[0].message).to.equal('"base string message" is not allowed');
+        });
+
+        it('uses custom rule messages', () => {
+
+            const messages = {
+                root: 'base string message',
+                'specific.message': new Template('specific rule error message')
+            };
+            const NewType = Joi.any()._extend({
+                messages,
+                validate: (value, { error }) => {
+
+                    if (value === 'specific message') {
+                        return { errors: error('specific.message') };
+                    }
+                }
+            });
+            const { error } = NewType.validate('specific message');
+            expect(error.details[0].message).to.equal('specific rule error message');
+        });
+
+        it('uses custom localized messages', () => {
+
+            const messages = {
+                english: {
+                    root: new Template('custom english root error'),
+                    'specific.message': new Template('specific rule error message'),
+                    'specific.other': 'other rule error message'
+                }
+            };
+            const NewType = Joi.any()._extend({
+                messages,
+                validate: (value, { error }) => {
+
+                    if (value === 'specific message') {
+                        return { errors: error('specific.message') };
+                    }
+                    else if (value === 'other error') {
+                        return { errors: error('specific.other') };
+                    }
+                    else if (value === 'root error') {
+                        return { errors: error('root') };
+                    }
+                }
+            });
+            const { error } = NewType.validate('specific message', { errors: { language: 'english' } });
+            expect(error.details[0].message).to.equal('specific rule error message');
+            const { error: otherError } = NewType.validate('other error', { errors: { language: 'english' } });
+            expect(otherError.details[0].message).to.equal('other rule error message');
+            const { error: rootError } = NewType.validate('root error', { errors: { language: 'english' } });
+            expect(rootError.details[0].message).to.equal('custom english root error');
+
+        });
+
+        it('merges localized error messages', () => {
+
+            const newBaseMessages = {
+                english: {
+                    'new.message': 'specific rule error message'
+                }
+            };
+            const NewBaseType = Joi.any()._extend({
+                messages: newBaseMessages,
+                validate: (value, { error }) => {
+
+                    if (value === 'specific message') {
+                        return { errors: error('new.message') };
+                    }
+                    else if (value === 'other error') {
+                        return { errors: error('specific.other') };
+                    }
+                }
+            });
+            const newExtendedMessages = {
+                english: {
+                    'other.message': 'extended rule error message'
+                }
+            };
+            const NewExtendedType = NewBaseType._extend({
+                messages: newExtendedMessages,
+                validate: (value, { error }) => {
+
+                    if (value === 'other error') {
+                        return { errors: error('other.message') };
+                    }
+                }
+            });
+            const { error } = NewExtendedType.validate('other error', { errors: { language: 'english' } });
+            expect(error.details[0].message).to.equal('extended rule error message');
+        });
+
+        it('throws on invalid custom rule message options', () => {
+
+            const extension = {
+                messages: { 'specific.message': [] },
+                validate: (value, { error }) => {
+
+                    if (value === 'specific message') {
+                        return { errors: error('specific.message') };
+                    }
+                }
+            };
+            expect(() => Joi.any()._extend(extension)).to.throw('Invalid message for specific.message');
+
+            extension.messages['specific.message'] = true; // test different error path
+            expect(() => Joi.any()._extend(extension)).to.throw('Invalid message for specific.message');
         });
     });
 });
