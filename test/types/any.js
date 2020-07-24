@@ -2,6 +2,7 @@
 
 const Code = require('@hapi/code');
 const Joi = require('../..');
+const Template = require('../../lib/template');
 const Lab = require('@hapi/lab');
 
 const Helper = require('../helper');
@@ -84,6 +85,14 @@ describe('any', () => {
             };
 
             Helper.equal(Joi.string().valid('x').messages(messages), Joi.string().valid('x').prefs({ messages }));
+        });
+
+        it('uses the provided messages template value', () => {
+
+            const messageTemplate = new Template('custom property name');
+            const schema = Joi.string().valid('x').messages({ root: messageTemplate });
+            const { error } = schema.validate('y');
+            expect(error.message).to.equal('"custom property name" must be one of [x]');
         });
     });
 
