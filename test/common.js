@@ -1,9 +1,9 @@
 'use strict';
 
 const Code = require('@hapi/code');
-const Joi = require('@hapi/joi');
 const Lab = require('@hapi/lab');
 
+const Joi = require('..');
 const Common = require('../lib/common');
 
 
@@ -39,7 +39,7 @@ describe('Common', () => {
             const value = 1234.5;
             const assert = Joi.number().integer();
 
-            expect(Common.validateArg(value, null, { assert })).to.be.a.string();
+            expect(Common.validateArg(value, null, { assert })).to.equal('"value" must be an integer');
         });
     });
 });
