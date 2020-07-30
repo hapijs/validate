@@ -3333,6 +3333,30 @@ describe('string', () => {
                     type: 'string.hostname',
                     context: { value: 'host:name', label: 'value' }
                 }],
+                ['a..com', false, {
+                    message: '"value" must be a valid hostname',
+                    path: [],
+                    type: 'string.hostname',
+                    context: { value: 'a..com', label: 'value' }
+                }],
+                ['+.com', false, {
+                    message: '"value" must be a valid hostname',
+                    path: [],
+                    type: 'string.hostname',
+                    context: { value: '+.com', label: 'value' }
+                }],
+                ['abcdefghijklmnopqrstuvxyzabcdefghijklmnopqrstuvxyzabcdefghijklmn.com', false, {
+                    message: '"value" must be a valid hostname',
+                    path: [],
+                    type: 'string.hostname',
+                    context: { value: 'abcdefghijklmnopqrstuvxyzabcdefghijklmnopqrstuvxyzabcdefghijklmn.com', label: 'value' }
+                }],
+                ['%C8', false, {
+                    message: '"value" must be a valid hostname',
+                    path: [],
+                    type: 'string.hostname',
+                    context: { value: '%C8', label: 'value' }
+                }],
                 ['-', false, {
                     message: '"value" must be a valid hostname',
                     path: [],
@@ -3346,7 +3370,16 @@ describe('string', () => {
                     type: 'string.hostname',
                     context: { value: '01234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789', label: 'value' }
                 }],
+                ['1.2.3.4', true],
+                ['1.2.3.4/16', true],
+                ['1.2.300.4', false, {
+                    message: '"value" must be a valid hostname',
+                    path: [],
+                    type: 'string.hostname',
+                    context: { value: '1.2.300.4', label: 'value' }
+                }],
                 ['::1', true],
+                ['::1/32', true],
                 ['0:0:0:0:0:0:0:1', true],
                 ['0:?:0:0:0:0:0:1', false, {
                     message: '"value" must be a valid hostname',
