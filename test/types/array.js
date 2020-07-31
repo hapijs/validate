@@ -1293,6 +1293,20 @@ describe('array', () => {
             expect(() => Joi.array().single().ordered(Joi.alternatives([Joi.array()]))).to.throw('Cannot specify array item with single rule enabled');
         });
 
+        it('disallows single value when single flag switched off', () => {
+
+            const schema = Joi.array().items(Joi.number(), Joi.string()).single(false);
+            Helper.validate(schema, [
+                [[5, 'a'], true],
+                [5, false, {
+                    message: '"value" must be an array',
+                    path: [],
+                    type: 'array.base',
+                    context: { label: 'value', value: 5 }
+                }]
+            ]);
+        });
+
         it('avoids unnecessary cloning when called twice', () => {
 
             const schema = Joi.array().single();
@@ -1635,6 +1649,45 @@ describe('array', () => {
             ]);
         });
 
+        it('errors on undefined value after custom validation with required', () => {
+
+            const schema = Joi.array().items(Joi.custom(() => undefined).required());
+
+            Helper.validate(schema, [
+                [[{}, { c: 3 }], false, {
+                    message: '"[0]" must not be a sparse array item',
+                    path: [0],
+                    type: 'array.sparse',
+                    context: { label: '[0]', key: 0, path: [0], pos: 0, value: undefined }
+                }]
+            ]);
+        });
+
+        it('errors on undefined value after custom validation with required and abortEarly false', () => {
+
+            const schema = Joi.array().items(Joi.object().empty({}).custom(() => undefined).required()).prefs({ abortEarly: false });
+
+            Helper.validate(schema, [
+                [[{}, { c: 3 }], false, {
+                    message: '"[0]" is required. "[1]" must not be a sparse array item',
+                    details: [
+                        {
+                            message: '"[0]" is required',
+                            path: [0],
+                            type: 'any.required',
+                            context: { label: '[0]', key: 0 }
+                        },
+                        {
+                            message: '"[1]" must not be a sparse array item',
+                            path: [1],
+                            type: 'array.sparse',
+                            context: { label: '[1]', key: 1, path: [1], pos: 1, value: undefined }
+                        }
+                    ]
+                }]
+            ]);
+        });
+
         it('errors on undefined value after validation with required and abortEarly false', () => {
 
             const schema = Joi.array().items(Joi.object().empty({}).required()).prefs({ abortEarly: false });
@@ -1701,6 +1754,33 @@ describe('array', () => {
                             context: { pos: 1, limit: 1, label: 'value', value: [{}, 3] }
                         }
                     ]
+                }]
+            ]);
+        });
+
+        it('errors on undefined value after switching sparse flag back on', () => {
+
+            let schema = Joi.array().items(Joi.number()).sparse();
+
+            Helper.validate(schema, [
+                [[undefined], true],
+                [[2, undefined], true]
+            ]);
+
+            schema = schema.sparse(false);
+
+            Helper.validate(schema, [
+                [[undefined], false, {
+                    message: '"[0]" must not be a sparse array item',
+                    path: [0],
+                    type: 'array.sparse',
+                    context: { key: 0, path: [0], pos: 0, value: undefined, label: '[0]' }
+                }],
+                [[2, undefined], false, {
+                    message: '"[1]" must not be a sparse array item',
+                    path: [1],
+                    type: 'array.sparse',
+                    context: { label: '[1]', key: 1, path: [1], pos: 1, value: undefined }
                 }]
             ]);
         });
