@@ -1663,7 +1663,7 @@ describe('array', () => {
             ]);
         });
 
-        it('errors on undefined value after validation with required and abortEarly false', () => {
+        it('errors on undefined value after custom validation with required and abortEarly false', () => {
 
             const schema = Joi.array().items(Joi.object().empty({}).custom(() => undefined).required()).prefs({ abortEarly: false });
 
