@@ -1593,6 +1593,7 @@ describe('any', () => {
         it('errors on blocked schema', () => {
 
             expect(() => Joi.any().valid(1).invalid(1)).to.throw('Setting invalid value 1 leaves schema rejecting all values due to previous valid rule');
+            expect(() => Joi.any().invalid(1).allow(1)).to.not.throw();
             expect(() => Joi.any().allow(1).invalid(1)).to.not.throw();
         });
 
@@ -2663,6 +2664,34 @@ describe('any', () => {
             ]);
         });
 
+        it('does not make switch value required when it is a schema', () => {
+
+            const schema = Joi.object({
+                a: Joi.when('b', [
+                    { is: Joi.valid(9), then: Joi.required() }
+                ]),
+                b: Joi.any()
+            });
+
+            Helper.validate(schema, [
+                [{}, false, {
+                    message: '"a" is required',
+                    path: ['a'],
+                    type: 'any.required',
+                    context: { label: 'a', key: 'a' }
+                }],
+                [{ b: 9 }, false, {
+                    message: '"a" is required',
+                    path: ['a'],
+                    type: 'any.required',
+                    context: { label: 'a', key: 'a' }
+                }],
+                [{ b: 10 }, true],
+                [{ a: 'anything' }, true],
+                [{ a: 'anything', b: 9 }, true]
+            ]);
+        });
+
         it('breaks early', () => {
 
             const schema = Joi.object({
@@ -2896,7 +2925,24 @@ describe('any', () => {
             ]);
         });
 
-        it('caches partials using variations in sub when conditions', () => {
+        it('caches partials using variations in sub when conditions (then)', () => {
+
+            const sub = Joi.when('b', { is: true, then: 2, otherwise: 3 });
+            const schema = Joi.object({
+                a: Joi.boolean().required(),
+                b: Joi.boolean().required(),
+                c: Joi.number()
+                    .when('a', { is: true, then: sub, otherwise: 1 })
+            });
+
+            Helper.validate(schema, [
+                [{ a: true, b: true, c: 2 }, true],
+                [{ a: false, b: true, c: 1 }, true],
+                [{ a: true, b: false, c: 3 }, true]
+            ]);
+        });
+
+        it('caches partials using variations in sub when conditions (otherwise)', () => {
 
             const sub = Joi.when('b', { is: true, then: 2, otherwise: 3 });
             const schema = Joi.object({
@@ -3155,6 +3201,28 @@ describe('any', () => {
             expect(() => Joi.any().$_addRule('')).to.throw('Invalid rule name');
             expect(() => Joi.any().$_addRule({ name: '' })).to.throw('Invalid rule name');
             expect(() => Joi.any().$_addRule({ name: 5 })).to.throw('Invalid rule name');
+        });
+
+        it('overrides duplicate single rules while maintaining others', () => {
+
+            const schema = Joi.number().min(5).max(20);
+
+            Helper.validate(schema.min(6), [
+                [5, false, {
+                    message: '"value" must be greater than or equal to 6',
+                    path: [],
+                    type: 'number.min',
+                    context: { limit: 6, value: 5, label: 'value' }
+                }],
+                [6, true],
+                [20, true],
+                [21, false, {
+                    message: '"value" must be less than or equal to 20',
+                    path: [],
+                    type: 'number.max',
+                    context: { limit: 20, value: 21, label: 'value' }
+                }]
+            ]);
         });
     });
 
