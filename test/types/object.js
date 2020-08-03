@@ -3,7 +3,6 @@
 const Code = require('@hapi/code');
 const Lab = require('@hapi/lab');
 const Joi = require('../..');
-const Template = require('../../lib/template');
 
 const Helper = require('../helper');
 
@@ -2299,27 +2298,15 @@ describe('object', () => {
             Helper.validate(Joi.compile(schema), [[obj, true, { a: 10, b: 10 }]]);
         });
 
-        it('can rename to a templated key that is same as from regex', () => {
+        it('can rename to a key that is same as from regex', () => {
 
             const schema = Joi.object({
                 a: Joi.number(),
                 b: Joi.number()
-            }).rename(/a/, new Template('a'), { override: true });
+            }).rename(/a/, 'a', { override: true });
 
             const obj = { a: 10 };
             Helper.validate(Joi.compile(schema), [[obj, true, { a: 10 }]]);
-        });
-
-        it('can rename to a templated key', () => {
-
-            const tmpl = new Template('b');
-            const schema = Joi.object({
-                a: Joi.number(),
-                b: Joi.number()
-            }).rename('a', tmpl, { alias: true });
-
-            const obj = { a: 10 };
-            Helper.validate(Joi.compile(schema), [[obj, true, { a: 10, b: 10 }]]);
         });
 
         it('with override disabled should not allow overwriting existing value', () => {
