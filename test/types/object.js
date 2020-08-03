@@ -3,6 +3,7 @@
 const Code = require('@hapi/code');
 const Lab = require('@hapi/lab');
 const Joi = require('../..');
+const Template = require('../../lib/template');
 
 const Helper = require('../helper');
 
@@ -1037,6 +1038,18 @@ describe('object', () => {
             ]);
         });
 
+        it('handles non-ref subject', () => {
+
+            const schema = Joi.object({
+                a: Joi.number()
+            })
+                .assert('.a', Joi.ref('a'));
+
+            const { error, value } = schema.validate({ a: 1 });
+            expect(error).to.not.exist();
+            expect(value.a).to.equal(1);
+        });
+
         it('allows root level context ref', () => {
 
             expect(() => {
@@ -1776,7 +1789,6 @@ describe('object', () => {
 
                 Joi.object().pattern(/.*/, Symbol('x'));
             }).to.throw('Invalid schema content: symbol');
-
         });
 
         it('validates unknown keys using a regex pattern', () => {
@@ -1833,7 +1845,9 @@ describe('object', () => {
 
             const schema = Joi.object({
                 a: Joi.number()
-            }).pattern(Joi.number().positive(), Joi.boolean())
+            }).pattern(Joi.number().positive(), Joi.boolean(), {
+                matches: Joi.number()
+            })
                 .pattern(Joi.string().length(2), 'x');
 
             Helper.validate(schema, { abortEarly: false }, [[{ bb: 'y', 5: 'x' }, false, {
@@ -2074,6 +2088,15 @@ describe('object', () => {
             ]);
         });
 
+        it('compiles if matches option is array', () => {
+
+            const schema = Joi.object().pattern('x', Joi.boolean(), { matches: Joi.array() });
+            Helper.validate(schema, [
+                [{ x: true }, true],
+                [{ y: true }, false, '"y" is not allowed']
+            ]);
+        });
+
         it('allows using refs in .valid() schema pattern', () => {
 
             const schema = Joi.object().pattern(Joi.string().valid(Joi.in('$keys')), Joi.any());
@@ -2260,6 +2283,40 @@ describe('object', () => {
                 a: Joi.number(),
                 b: Joi.number()
             }).rename('a', 'b', { alias: true });
+
+            const obj = { a: 10 };
+            Helper.validate(Joi.compile(schema), [[obj, true, { a: 10, b: 10 }]]);
+        });
+
+        it('can rename from regex', () => {
+
+            const schema = Joi.object({
+                a: Joi.number(),
+                b: Joi.number()
+            }).rename(/a/, 'b', { alias: true });
+
+            const obj = { a: 10 };
+            Helper.validate(Joi.compile(schema), [[obj, true, { a: 10, b: 10 }]]);
+        });
+
+        it('can rename to a templated key that is same as from regex', () => {
+
+            const schema = Joi.object({
+                a: Joi.number(),
+                b: Joi.number()
+            }).rename(/a/, new Template('a'), { override: true });
+
+            const obj = { a: 10 };
+            Helper.validate(Joi.compile(schema), [[obj, true, { a: 10 }]]);
+        });
+
+        it('can rename to a templated key', () => {
+
+            const tmpl = new Template('b');
+            const schema = Joi.object({
+                a: Joi.number(),
+                b: Joi.number()
+            }).rename('a', tmpl, { alias: true });
 
             const obj = { a: 10 };
             Helper.validate(Joi.compile(schema), [[obj, true, { a: 10, b: 10 }]]);
