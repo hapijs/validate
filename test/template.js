@@ -30,7 +30,6 @@ describe('template', () => {
     it('_parse will parse {} templates', () => {
 
         const template = new Template('foo {raw} \\{esc\\}{');
-        template._parse();
         const parsed = template._template;
 
         expect(parsed[0]).to.equal('foo ');
@@ -42,7 +41,6 @@ describe('template', () => {
     it('render will stringify a parsed template', () => {
 
         const template = new Template('foo {raw} \\{esc\\}{');
-        template._parse();
         const state = {
             path: 'test/',
             ancestors: ['test'],
@@ -57,7 +55,6 @@ describe('template', () => {
     it('render will stringify a parsed template and use error options', () => {
 
         const template = new Template('foo <html/> {raw} \\{esc\\}{');
-        template._parse();
         const state = {
             path: 'test/',
             ancestors: ['test'],
