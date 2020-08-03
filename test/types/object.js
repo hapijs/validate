@@ -2284,7 +2284,7 @@ describe('object', () => {
             }).rename('a', 'b', { alias: true });
 
             const obj = { a: 10 };
-            Helper.validate(Joi.compile(schema), [[obj, true, { a: 10, b: 10 }]]);
+            Helper.validate(schema, [[obj, true, { a: 10, b: 10 }]]);
         });
 
         it('can rename from regex', () => {
@@ -2295,7 +2295,7 @@ describe('object', () => {
             }).rename(/a/, 'b', { alias: true });
 
             const obj = { a: 10 };
-            Helper.validate(Joi.compile(schema), [[obj, true, { a: 10, b: 10 }]]);
+            Helper.validate(schema, [[obj, true, { a: 10, b: 10 }]]);
         });
 
         it('can rename to a key that is same as from regex', () => {
@@ -2306,7 +2306,7 @@ describe('object', () => {
             }).rename(/a/, 'a', { override: true });
 
             const obj = { a: 10 };
-            Helper.validate(Joi.compile(schema), [[obj, true, { a: 10 }]]);
+            Helper.validate(schema, [[obj, true, { a: 10 }]]);
         });
 
         it('with override disabled should not allow overwriting existing value', () => {
