@@ -1136,5 +1136,16 @@ describe('ref', () => {
 
             expect(Joi.ref('a+b+c', { separator: '+' }).root).to.equal('a');
         });
+
+        it('respects custom local prefix', () => {
+
+            expect(Joi.ref('+a.b.c', { prefix: { local: '+' } })).to.contain({
+                type: 'local',
+                key: 'a.b.c',
+                root: 'a',
+                path: ['a', 'b', 'c'],
+                separator: '.'
+            });
+        });
     });
 });
