@@ -40,6 +40,16 @@ describe('Values', () => {
             set.add(ref);
             expect(set).to.have.length(1);
         });
+
+        it('ignores values added multiple times', () => {
+
+            const set = new Values();
+            const value = 'xyz';
+            set.add(value);
+            set.add(value);
+            set.add(value);
+            expect(set).to.have.length(1);
+        });
     });
 
     describe('clone()', () => {
@@ -98,6 +108,25 @@ describe('Values', () => {
                 [{ b: 2 }, false, '"b" must be one of [ref:a]'],
                 [{ a: 3, b: 3 }, true]
             ]);
+        });
+    });
+
+    describe('removes()', () => {
+
+        it('removes refs properly', () => {
+
+            const set = new Values();
+            set.add(Joi.ref('foo'));
+            set.remove(Joi.ref('foo'));
+            expect(set.has(Joi.ref('foo'))).to.be.false();
+        });
+
+        it('removes values properly', () => {
+
+            const set = new Values();
+            set.add('xyz');
+            set.remove('xyz');
+            expect(set.has('xyz')).to.be.false();
         });
     });
 
