@@ -243,4 +243,15 @@ describe('Modify', () => {
             });
         });
     });
+
+    describe('concat()', () => {
+
+        it('prevents object keys and ids collision', () => {
+
+            const destination = Joi.object({ a: Joi.string() });
+            const source = Joi.object({ b: Joi.string().id('a') });
+
+            expect(() => destination.concat(source)).to.throw('Schema id conflicts with existing key: a');
+        });
+    });
 });
