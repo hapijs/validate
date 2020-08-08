@@ -2149,6 +2149,56 @@ describe('object', () => {
             ]);
         });
 
+        it('matches matching keys to grandparents (abortEarly = false)', () => {
+
+            const hasMatchingGrandparent = (value, { message, state }) => {
+
+                // 0: [ 'b' ]
+                // 1: { b: true }
+                // 2: { match: { b: true } }
+                // 3: { a: { match: { b: true } }, b: { match: { a: true } } }
+
+                if (state.ancestors[3][value] === undefined) {
+                    return message('{{#label}} does not have a matching grandparent');
+                }
+
+                return value;
+            };
+
+            const schema = Joi.object()
+                .pattern(/.*/, Joi.object({
+                    match: Joi.object()
+                        .pattern(/.*/, Joi.boolean(), { matches: hasMatchingGrandparent })
+                }));
+
+            Helper.validate(schema, { abortEarly: false }, [
+                [{ a: { match: { b: true } }, b: { match: { a: true } } }, true],
+                [{ a: { match: { b: true } } }, false, {
+                    message: '"a.match" keys failed to match pattern requirements',
+                    details: [{
+                        message: '"a.match" keys failed to match pattern requirements',
+                        path: ['a', 'match'],
+                        type: 'object.pattern.match',
+                        context: {
+                            key: 'match',
+                            label: 'a.match',
+                            matches: ['b'],
+                            message: '"a.match[0]" does not have a matching grandparent',
+                            value: { b: true },
+                            details: [
+                                {
+                                    context: { key: 0, label: 'a.match[0]', value: 'b' },
+                                    message: '"a.match[0]" does not have a matching grandparent',
+                                    path: ['a', 'match', 0],
+                                    type: 'custom'
+                                }
+                            ]
+                        }
+                    }]
+                }]
+            ]);
+        });
+
         it('works with keys()', () => {
 
             const schema = Joi.object()
