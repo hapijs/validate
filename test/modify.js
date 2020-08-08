@@ -39,6 +39,20 @@ describe('Modify', () => {
         });
     });
 
+    describe('register()', () => {
+
+        it('prevents adding different schemas with the same id', () => {
+
+            expect(() => {
+
+                Joi.object({
+                    a: Joi.string().id('c'),
+                    b: Joi.string().id('c')
+                });
+            }).to.throw('Cannot add different schemas with the same id: c');
+        });
+    });
+
     describe('schema()', () => {
 
         it('returns undefined when schema is not modified', () => {
@@ -252,6 +266,14 @@ describe('Modify', () => {
             const source = Joi.object({ b: Joi.string().id('a') });
 
             expect(() => destination.concat(source)).to.throw('Schema id conflicts with existing key: a');
+        });
+
+        it('allows object keys and ids that do not collide', () => {
+
+            const destination = Joi.object({ a: Joi.string() });
+            const source = Joi.object({ b: Joi.string().id('c') });
+
+            expect(() => destination.concat(source)).to.not.throw();
         });
     });
 });
