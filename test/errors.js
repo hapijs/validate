@@ -178,6 +178,34 @@ describe('errors', () => {
         expect(schema.validate(1, { errors: { language: 'latin' } }).error).to.be.an.error('"valorem" angustus');
     });
 
+    it('supports custom wrap characters', () => {
+
+        const messages = {
+            english: {
+                'number.min': '{#label} too small'
+            },
+            empty: {}
+        };
+
+        const schema = Joi.object({
+            a: Joi.number().min(10),
+            lang: Joi.string().required()
+        })
+            .prefs({
+                messages,
+                errors: {
+                    language: Joi.ref('/lang'),
+                    wrap: {
+                        label: '{}'
+                    }
+                }
+            });
+
+        expect(schema.validate({ a: 1, lang: 'english' }).error).to.be.an.error('{a} too small');
+        expect(schema.validate({ a: 1, lang: 'unknown' }).error).to.be.an.error('{a} must be greater than or equal to 10');
+        expect(schema.validate({ a: 1, lang: 'empty' }).error).to.be.an.error('{a} must be greater than or equal to 10');
+    });
+
     it('supports render preference', () => {
 
         expect(Joi.number().min(10).validate(1, { errors: { render: false } }).error).to.be.an.error('number.min');
@@ -452,6 +480,27 @@ describe('errors', () => {
         expect(schema.validate({ x: { y: { z: 'o' } } }, { errors: { label: 'key' } }).error).to.be.an.error('"z" must be one of [z]');
         expect(schema.validate(1, { errors: { label: 'key' } }).error).to.be.an.error('"value" must be of type object');
         expect(schema.validate({ x: { y: { a: [1] } } }, { errors: { label: 'key' } }).error).to.be.an.error('"[0]" must be a string');
+    });
+
+    it('errors on missing error code', () => {
+
+        const special = Joi.string()._extend({
+            type: 'special',
+            rules: {
+                fail: {
+                    method() {
+
+                        return this.$_addRule('fail');
+                    },
+                    validate(value, helpers) {
+
+                        return helpers.error('special.fail');
+                    }
+                }
+            }
+        });
+
+        expect(special.fail().validate('anything').error).to.be.an.error('Error code "special.fail" is not defined, your custom type is missing the correct messages definition');
     });
 
     describe('annotate()', () => {
