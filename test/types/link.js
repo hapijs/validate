@@ -123,6 +123,22 @@ describe('link', () => {
         ]);
     });
 
+    it('links schema cousin nodes (id)', () => {
+
+        const schema = Joi.object({
+            a: Joi.alternatives([Joi.string(), Joi.number()]).id('foo'),
+            b: {
+                c: Joi.link('/foo')
+            }
+        });
+
+        Helper.validate(schema, [
+            [{ a: 1, b: { c: 2 } }, true],
+            [{ a: '1', b: { c: '2' } }, true],
+            [{ a: [1], b: { c: '2' } }, false, '"a" must be one of [string, number]']
+        ]);
+    });
+
     it('validates a recursive schema', () => {
 
         const schema = Joi.object({
