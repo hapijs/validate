@@ -3326,7 +3326,9 @@ describe('string', () => {
                 ['www.example.com', true],
                 ['domain.local', true],
                 ['3domain.local', true],
+                ['domain.3local', true],
                 ['hostname', true],
+                ['3hostname', true],
                 ['host:name', false, {
                     message: '"value" must be a valid hostname',
                     path: [],
