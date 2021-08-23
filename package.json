@@ -7,6 +7,11 @@
   "files": [
     "lib/**/*"
   ],
+  "eslintConfig": {
+    "extends": [
+      "plugin:@hapi/module"
+    ]
+  },
   "dependencies": {
     "@hapi/hoek": "^9.0.0",
     "@hapi/topo": "^5.0.0"
@@ -14,6 +19,7 @@
   "devDependencies": {
     "@hapi/bourne": "2.x.x",
     "@hapi/code": "8.x.x",
+    "@hapi/eslint-plugin": "*",
     "@hapi/lab": "24.x.x"
   },
   "scripts": {
