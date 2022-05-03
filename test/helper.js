@@ -75,8 +75,8 @@ exports.validate = function (schema, prefs, tests) {
                 continue;
             }
 
-            if (schema._preferences && schema._preferences.abortEarly === false ||
-                prefs && prefs.abortEarly === false) {
+            if (schema._preferences?.abortEarly === false ||
+                prefs?.abortEarly === false) {
 
                 expect(error.message).to.equal(expected.message);
                 expect(error.details).to.equal(expected.details);
