@@ -3324,6 +3324,22 @@ describe('string', () => {
             const schema = Joi.string().hostname();
             Helper.validate(schema, [
                 ['www.example.com', true],
+                ['www.example.com.', true],
+                ['www.hapi.dev.', true],
+                ['myhost.', true],
+                ['hostname.', true],
+                ['.', false, {
+                    message: '"value" must be a valid hostname',
+                    path: [],
+                    type: 'string.hostname',
+                    context: { value: '.', label: 'value' }
+                }],
+                ['192.168.1.1.', false, {
+                    message: '"value" must be a valid hostname',
+                    path: [],
+                    type: 'string.hostname',
+                    context: { value: '192.168.1.1.', label: 'value' }
+                }],
                 ['domain.local', true],
                 ['3domain.local', true],
                 ['domain.3local', true],
