@@ -3383,6 +3383,20 @@ describe('string', () => {
                 ['::1', true],
                 ['::1/32', true],
                 ['0:0:0:0:0:0:0:1', true],
+                ['www.hapi.dev.', true],
+                ['myhost.', true],
+                ['.', false, {
+                    message: '"value" must be a valid hostname',
+                    path: [],
+                    type: 'string.hostname',
+                    context: { value: '.', label: 'value' }
+                }],
+                ['1.2.3.4.', false, {
+                    message: '"value" must be a valid hostname',
+                    path: [],
+                    type: 'string.hostname',
+                    context: { value: '1.2.3.4.', label: 'value' }
+                }],
                 ['0:?:0:0:0:0:0:1', false, {
                     message: '"value" must be a valid hostname',
                     path: [],
